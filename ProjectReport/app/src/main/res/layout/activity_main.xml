@@ -213,7 +213,7 @@
         app:layout_constraintTop_toBottomOf="@id/edtResult" />
 
     <Button
-        android:onClick="buttonSubtract_Click"
+        android:onClick="buttonOperation_Click"
         android:id="@+id/btnSubtract"
         style="@style/Base.TextAppearance.AppCompat.Button.custom_button_function"
         android:layout_width="0dp"
@@ -226,7 +226,7 @@
         app:layout_constraintTop_toBottomOf="@id/barV2" />
 
     <Button
-        android:onClick="buttonAdd_Click"
+        android:onClick="buttonOperation_Click"
         android:id="@+id/btnAdd"
         style="@style/Base.TextAppearance.AppCompat.Button.custom_button_function"
         android:layout_width="0dp"
@@ -265,7 +265,7 @@
         app:layout_constraintTop_toBottomOf="@id/edtResult" />
 
     <Button
-        android:onClick="buttonDivide_Click"
+        android:onClick="buttonOperation_Click"
         android:id="@+id/btnDivide"
         style="@style/Base.TextAppearance.AppCompat.Button.custom_button_function"
         android:layout_width="0dp"
@@ -278,7 +278,7 @@
         app:layout_constraintTop_toBottomOf="@id/barV2" />
 
     <Button
-        android:onClick="buttonMultiply_Click"
+        android:onClick="buttonOperation_Click"
         android:id="@+id/btnMultiply"
         style="@style/Base.TextAppearance.AppCompat.Button.custom_button_function"
         android:layout_width="0dp"
