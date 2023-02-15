@@ -13,18 +13,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {
+    //    Biến sẽ tham chiếu đến ô hiểm thị kết quả
     EditText edtResult;
-
+    //    Biến lưu  giá trị kết quả
     static Double result = null;
-
+    //    Biến lưu gía trị của số thứ 1
     static Double a = null;
-
+    //    Biến lưu giá trị của số số thứ 2
     static Double b = null;
-
+    //    Kiểm tra phép toán có được thực hiện chưa
     boolean operation = false;
-    boolean dotted = true;
-
-    boolean error = false;
+    //    Kiểm tra dấu chấm đã được dùng chưa
+    boolean dot = true;
+    //    Kiểm tra xem lỗi divide by zero
+    boolean divideByZero = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +36,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+//        Tham chiếu đến edtResult trong activity_main.xml
         edtResult = findViewById(R.id.edtResult);
+//        Ẩn hint
         edtResult.setHint("");
+//        Không cho người dùng nhập dữ liệu
         edtResult.setInputType(InputType.TYPE_NULL);
+//        Cho phép chọn nội dung để copy
         edtResult.setTextIsSelectable(true);
+//        Sự kiện khi thay đổi text -> dùng kể kiểm tra số lượng ký tự đã nhập
         edtResult.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -51,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
+//                Nếu nhập vào quá 15 số
                 if (editable.length() >= 15 && result == null) {
                     Toast.makeText(getApplicationContext(), "Không nhập nhiều hơn 15 chữ số.", Toast.LENGTH_LONG).show();
                 }
@@ -59,39 +66,66 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonAllClear_Click(View view) {
+//        Không cho phép thực hiện phép toán
         operation = false;
-        dotted = true;
+//        Cho phép nhập giấu chấm
+        dot = true;
+//        Gán biến a về mặc định
         a = null;
+//        Gán biến b về mặc định
         b = null;
+//        Gán kết quả về mặc định
         result = null;
+//        Gán kết quả về rỗng
         edtResult.setText("");
-        error = false;
+//        Gán lỗi chia cho không chưa xảy ra
+        divideByZero = false;
     }
 
     public void buttonNumber_Click(View view) {
+//        Tham chiếu thông qua id của sự kiện click
         Button btn = findViewById(view.getId());
+//        Lấy giá trị của EditText
         String text = edtResult.getText().toString();
+//        Nếu nhập số 0 ở đầu thì không cho nhập số 0 nữa
         if (text.equals("0") || (a != null && text.endsWith("0"))) {
             return;
         }
-        StringBuilder builder = new StringBuilder();
-        builder.append(edtResult.getText().toString()).append(btn.getText().toString());
-        edtResult.setText(builder);
+//        Mặc định lấy ký tự của nút bấm thêm vào sau chuỗi
+        String src = text + btn.getText().toString();
+        edtResult.setText(src);
+//        Cho phép nhập phép toán nếu chưa có phép (vừa nhập số)
         operation = true;
     }
 
     public void buttonDel_Click(View view) {
         String text = edtResult.getText().toString();
+//        Nếu text rỗng thì không làm gì
         if (text.length() != 0) {
             int index = text.length() - 1;
+//            Lấy ký tự ở vị trí cuối cùng
             char symbol = text.charAt(index);
+//            Xóa ký tự ở cuối trong EditText
             edtResult.setText(text.substring(0, index));
+//            Nếu mà ký tự đó là phép toán thì cho phép nhập lại phép toán và reset biến a
             if (symbol == '+' || symbol == '-' || symbol == '×' || symbol == '/') {
                 a = null;
                 operation = true;
+//                Nếu ký tự đã xóa là dấu chấm cho phép nhập dấu chấm
             } else if (symbol == '.') {
-                dotted = true;
-            } else if ((text.startsWith("-") && text.indexOf('-', 1) == -1) || text.indexOf('+', 1) == -1 || text.indexOf('×', 1) == -1 || text.indexOf('/', 1) == -1) {
+                dot = true;
+            }
+//            Nếu ký tự đã xóa là số 0 và bị lỗi chia 0
+            else if (symbol == '0' && divideByZero) {
+                divideByZero = false;
+                dot = true;
+            }
+//            Nếu edt bắt đầu bằng dấu - (a âm) và không tồn tại dấu trừ phía sau đó, VD: -5
+//            hoặc không tồn tại dấu cộng phái sau đó, 5
+//            hoặc không tồn tại dấu nhân phái sau đó, 5
+//            hoặc không tồn tại dấu chia phái sau đó, 5
+//            thì cho phép nhập dấu vào
+            else if ((text.startsWith("-") && text.indexOf('-', 1) == -1) || text.indexOf('+', 1) == -1 || text.indexOf('×', 1) == -1 || text.indexOf('/', 1) == -1) {
                 operation = true;
             }
         }
@@ -99,27 +133,48 @@ public class MainActivity extends AppCompatActivity {
 
     public void buttonOperation_Click(View view) {
         Button btn = findViewById(view.getId());
+//        Ký tự trên btn
         String text = btn.getText().toString();
+//        Chuỗi trên edt
         StringBuilder screen = new StringBuilder(edtResult.getText().toString());
-        if (text.equals("-") && screen.toString().equals("")) {
+        if (screen.toString().endsWith("-") || screen.toString().endsWith("+") || screen.toString().endsWith("/")
+                || screen.toString().endsWith("×")) {
+            operation = false;
+        } else if (screen.toString().endsWith(".")) {
+            dot = false;
+        }
+//        ký tự - và chuỗi trống
+        else if (text.equals("-") && screen.toString().equals("")) {
             edtResult.setText(text);
+//        Nếu đã có rs và người dùng bấm = liên tục
         } else if (operation && result != null) {
+//            Gán a = rs để nếu người dùng muốn thực hiện phép toán tiếp chỉ gán rs = a + b
             a = result;
+//            edt thêm giá trị của nút bấm vào
             screen.append(btn.getText().toString());
             edtResult.setText(screen);
+//            Nếu chưa nhập giá trị a và phép toán được phép nhập
         } else if (a != null && operation) {
             String symbol = btn.getText().toString();
             char _symbol = symbol.charAt(0);
+//            Lấy ra ký tự của btn nếu edt chưa có chứa ký tự đó thì cho phép thực hiện phép toán
+//            VD: 5 + 3, 5-3, 5*3, 5/3
             String tmp = edtResult.getText().toString();
             if (tmp.indexOf(_symbol, 1) != -1) {
                 btnResult_Click(view);
             }
-        } else if (operation && !error) {
+//            Nếu được phép thực hiện phép toán và không có lỗi chia cho không
+        } else if (operation && !divideByZero) {
+//            gán giá trị cho biến a
             a = Double.parseDouble(screen.toString());
+//            Thên phép toán vào chuỗi
             screen.append(btn.getText().toString());
             edtResult.setText(screen);
+//            Không cho thực hiện phép toán vì đã tồn tại
             operation = false;
-            dotted = true;
+//            Cho phép số b bắt đầu = dấu .
+            dot = true;
+//            Nếu đã có phép toán /, * ở cuối chuỗi có thể nhập thêm toán tử trừ
         } else if (screen.toString().endsWith("/") || screen.toString().endsWith("×")) {
             if (btn.getText().toString().equals("-")) {
                 screen.append(btn.getText().toString());
@@ -129,47 +184,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonDot_Click(View view) {
-        if (dotted && !error) {
+//        Nếu chưa có dấu chấm và nó không có lỗi chia 0
+//        thì cho phép thêm dấu .
+        if (dot && !divideByZero) {
             Button btn = findViewById(view.getId());
             StringBuilder builder = new StringBuilder();
             builder.append(edtResult.getText().toString()).append(btn.getText().toString());
             edtResult.setText(builder);
-            dotted = false;
+//            không thể nhập thêm dấu.
+            dot = false;
+//            Sau dấu . phải là số
             operation = false;
         }
     }
 
     public void btnResult_Click(View view) {
         String text = edtResult.getText().toString();
-//        A khac null && độ dài chuỗi hiện tại + 1 ký tự bất kỳ lớn nhỏ hơn màn hình
+//       Giá trị biến a khác null thì được phép thực hiện phép toán
         if (a != null) {
             handleOperation(text);
+//            Cho người dùng spam nút = khi đã có kết quả
         } else if (result != null) {
-            //            Cộng kết quả còn tồn lại
+//            Spam
             result += result;
-            int temp = result.intValue();
-            if (result == temp) {
-                edtResult.setText(String.valueOf(temp));
-            } else {
-                edtResult.setText(String.valueOf(result));
-            }
+            edtResult.setText(String.valueOf(result));
+//           nếu cuối không có dấu chấm thì được thêm dấu .
+            dot = !edtResult.getText().toString().contains(".");
+//            Reset
             operation = true;
-            dotted = !edtResult.getText().toString().contains(".");
             a = null;
             b = null;
         }
     }
 
-
     public void handleOperation(String text) {
+//        Thực hiện phép toán khi nó được kết thức bằng 1 con số
         if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("×") && !text.endsWith("/") && !text.endsWith(".")) {
             if (text.contains("+")) {
                 add(text);
             } else if (text.contains("-")) {
+//                Loại bỏ trường hợp dấu - ở đầu
                 int index = text.indexOf('-', 1);
+//                nếu không có dấu -1 ở giũa và không có dấu / ở cuối và không có dấu *,/ ở trước dấu trừ
+//                thì được thực hiện phép trừ
                 if (index != -1 && text.charAt(index - 1) != '/' && text.charAt(index - 1) != '×') {
                     subtract(text, index);
                 } else {
+//                    Nếu a âm và nó không phải phép toán  từ thì thực hiện phép toán khác
                     if (text.contains("+")) {
                         add(text);
                     } else if (text.contains("×")) {
@@ -183,27 +244,30 @@ public class MainActivity extends AppCompatActivity {
             } else if (text.contains("/")) {
                 divide(text);
             }
+//          Có thể thực hiện được phép toán
             operation = true;
-            dotted = !edtResult.getText().toString().contains(".");
-            a = null;
-            b = null;
+//            Nếu không có dấu chấn thì được phép thêm .
+            dot = !edtResult.getText().toString().contains(".");
         }
     }
 
     private void subtract(String text, int index) {
+//        bỏ qua dấu trừ ở giũa để lấy số b và thực hiện trừ
         b = Double.parseDouble(text.substring(index + 1));
         result = a - b;
-        String tmp = String.valueOf(result);
-        edtResult.setText(rounding(tmp));
-
+        edtResult.setText(String.valueOf(result));
+//        Reset
+        a = null;
+        b = null;
     }
 
     private void add(String text) {
         int index = text.indexOf('+');
         b = Double.parseDouble(text.substring(index + 1));
         result = a + b;
-        String tmp = String.valueOf(result);
-        edtResult.setText(rounding(tmp));
+        edtResult.setText(String.valueOf(result));
+        a = null;
+        b = null;
     }
 
     private void divide(String text) {
@@ -211,14 +275,18 @@ public class MainActivity extends AppCompatActivity {
         b = Double.parseDouble(text.substring(index + 1));
         if (b != 0) {
             result = a / b;
-            String tmp = String.valueOf(result);
-            edtResult.setText(rounding(tmp));
+            edtResult.setText(String.valueOf(result));
+            a = null;
+            b = null;
         } else {
             Toast.makeText(this, "Không thể chia cho 0.", Toast.LENGTH_LONG).show();
             edtResult.setText(text);
-            dotted = false;
+//            Nếu bị lỗi thì có thể biến a còn được dùng nên không reset
+//            3/0
+//            3/.x được làm ở btn dot
+            dot = false;
             operation = false;
-            error = true;
+            divideByZero = true;
         }
     }
 
@@ -226,16 +294,8 @@ public class MainActivity extends AppCompatActivity {
         int index = text.indexOf('×');
         b = Double.parseDouble(text.substring(index + 1));
         result = a * b;
-        String tmp = String.valueOf(result);
-        edtResult.setText(rounding(tmp));
-    }
-
-    private String rounding(String temp) {
-        int temp_a = a.intValue();
-        int temp_b = b.intValue();
-        if (a == temp_a && b == temp_b) {
-            return temp.substring(0, temp.length() - 2);
-        }
-        return temp;
+        edtResult.setText(String.valueOf(result));
+        a = null;
+        b = null;
     }
 }
