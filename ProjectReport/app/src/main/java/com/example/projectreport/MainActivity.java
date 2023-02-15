@@ -3,6 +3,8 @@ package com.example.projectreport;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +35,24 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         edtResult = findViewById(R.id.edtResult);
         edtResult.setHint("");
+        edtResult.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() >= 15) {
+                    Toast.makeText(getApplicationContext(), "Không nhập nhiều hơn 15 chữ số.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     public void buttonAllClear_Click(View view) {
@@ -41,16 +61,24 @@ public class MainActivity extends AppCompatActivity {
         a = null;
         b = null;
         edtResult.setText("");
+        error = false;
 //        Gán lại ban đầu
     }
 
     public void buttonNumber_Click(View view) {
         Button btn = findViewById(view.getId());
+        String text = edtResult.getText().toString();
+        if ((btn.getText().toString().equals("0") && text.equals("0"))
+                || (a != null && text.endsWith("0"))) {
+            return;
+        }
         StringBuilder builder = new StringBuilder();
         builder.append(edtResult.getText().toString()).append(btn.getText().toString());
         edtResult.setText(builder);
         edtResult.setSelection(edtResult.getText().length());
         operation = true;
+
+        edtResult.setSelection(edtResult.getText().length());
     }
 
     public void buttonDel_Click(View view) {
@@ -67,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
 //            Nếu ký tự là chấm thì cho xóa cho nhập lại
             else if (symbol == '.') {
                 dotted = true;
+            } else if ((text.startsWith("-") && text.indexOf('-', 1) == -1)
+                    || text.indexOf('+', 1) == -1 ||
+                    text.indexOf('×', 1) == -1 ||
+                    text.indexOf('/', 1) == -1) {
+                operation = true;
             }
             edtResult.setSelection(edtResult.getText().length());
         }
@@ -83,14 +116,16 @@ public class MainActivity extends AppCompatActivity {
         }
 //      Tính kết quả thông qua dấu
         else if (a != null && operation) {
-            handleOperation(edtResult.getText().toString());
-            String cur = edtResult.getText().toString() + btn.getText().toString();
-            edtResult.setText(cur);
-
+            String symbol = btn.getText().toString();
+            char _symbol = symbol.charAt(0);
+            String tmp = edtResult.getText().toString();
+//            Khoong phai dau tru ban dau
+            if (tmp.indexOf(_symbol, 1) != -1) {
+                btnResult_Click(view);
+            }
         }
         //        Nếu được phép nhập dấu, được phép chấm
         else if (operation && !error) {
-            System.out.println(edtResult.getText().toString());
             a = Double.parseDouble(screen.toString());
             screen.append(btn.getText().toString());
             edtResult.setText(screen);
@@ -165,24 +200,13 @@ public class MainActivity extends AppCompatActivity {
                 result = a / b;
                 edtResult.setText(String.valueOf(result));
             } else {
-                Toast.makeText(this, "Không thể chia cho 0.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Không thể chia cho 0.", Toast.LENGTH_LONG).show();
+                edtResult.setSelection(edtResult.getText().length());
                 edtResult.setText(text);
                 dotted = false;
                 operation = false;
                 error = true;
             }
-        }
-        int len_a = String.valueOf(a).length();
-        int len_b = String.valueOf(b).length();
-        int len = Math.max(len_a, len_b);
-        String tmp = String.valueOf(result);
-        String rs = tmp.substring(0, len);
-        result = Double.parseDouble(rs);
-        int _rs = result.intValue();
-        if (result == _rs) {
-            edtResult.setText(String.valueOf(_rs));
-        } else {
-            edtResult.setText(String.valueOf(result));
         }
         edtResult.setSelection(edtResult.getText().length());
         operation = true;

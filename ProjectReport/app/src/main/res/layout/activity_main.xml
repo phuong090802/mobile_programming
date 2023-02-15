@@ -10,6 +10,7 @@
     tools:context=".MainActivity">
 
     <EditText
+        android:maxLength="15"
         style="@style/Base.Widget.AppCompat.EditText.input"
         android:id="@+id/edtResult"
         android:layout_width="0dp"
