@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         dotted = true;
         a = null;
         b = null;
+        result = null;
         edtResult.setText("");
         error = false;
 //        Gán lại ban đầu
@@ -68,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
     public void buttonNumber_Click(View view) {
         Button btn = findViewById(view.getId());
         String text = edtResult.getText().toString();
-        if ((btn.getText().toString().equals("0") && text.equals("0"))
-                || (a != null && text.endsWith("0"))) {
+        if (text.equals("0") || (a != null && text.endsWith("0"))) {
+
             return;
         }
         StringBuilder builder = new StringBuilder();
@@ -95,10 +96,7 @@ public class MainActivity extends AppCompatActivity {
 //            Nếu ký tự là chấm thì cho xóa cho nhập lại
             else if (symbol == '.') {
                 dotted = true;
-            } else if ((text.startsWith("-") && text.indexOf('-', 1) == -1)
-                    || text.indexOf('+', 1) == -1 ||
-                    text.indexOf('×', 1) == -1 ||
-                    text.indexOf('/', 1) == -1) {
+            } else if ((text.startsWith("-") && text.indexOf('-', 1) == -1) || text.indexOf('+', 1) == -1 || text.indexOf('×', 1) == -1 || text.indexOf('/', 1) == -1) {
                 operation = true;
             }
             edtResult.setSelection(edtResult.getText().length());
@@ -151,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void btnResult_Click(View view) {
         String text = edtResult.getText().toString();
-
 //        A khac null && độ dài chuỗi hiện tại + 1 ký tự bất kỳ lớn nhỏ hơn màn hình
         if (a != null) {
             handleOperation(text);
@@ -175,43 +172,85 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void handleOperation(String text) {
-        if (text.contains("+")) {
-            int index = text.indexOf('+');
-            b = Double.parseDouble(text.substring(index + 1));
-            result = a + b;
-            edtResult.setText(String.valueOf(result));
-        } else if (text.contains("-")) {
-            int index = text.indexOf('-');
-            if (a < 0) {
-                index = text.indexOf('-', 1);
+        if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("×") && !text.endsWith("/") && !text.endsWith(".")) {
+            if (text.contains("+")) {
+                add(text);
+            } else if (text.contains("-")) {
+                int index = text.indexOf('-', 1);
+                if (index != -1) {
+                    subtract(text, index);
+                } else {
+                    if (text.contains("+")) {
+                        add(text);
+                    } else if (text.contains("×")) {
+                        multiple(text);
+                    } else if (text.contains("/")) {
+                        divide(text);
+                    }
+                }
+
+            } else if (text.contains("×")) {
+                multiple(text);
+            } else if (text.contains("/")) {
+                divide(text);
             }
-            b = Double.parseDouble(text.substring(index + 1));
-            result = a - b;
-            edtResult.setText(String.valueOf(result));
-        } else if (text.contains("×")) {
-            int index = text.indexOf('×');
-            b = Double.parseDouble(text.substring(index + 1));
-            result = a * b;
-            edtResult.setText(String.valueOf(result));
-        } else if (text.contains("/")) {
-            int index = text.indexOf('/');
-            b = Double.parseDouble(text.substring(index + 1));
-            if (b != 0) {
-                result = a / b;
-                edtResult.setText(String.valueOf(result));
-            } else {
-                Toast.makeText(this, "Không thể chia cho 0.", Toast.LENGTH_LONG).show();
-                edtResult.setSelection(edtResult.getText().length());
-                edtResult.setText(text);
-                dotted = false;
-                operation = false;
-                error = true;
-            }
+            edtResult.setSelection(edtResult.getText().length());
+            operation = true;
+            dotted = !edtResult.getText().toString().contains(".");
+            a = null;
+            b = null;
         }
-        edtResult.setSelection(edtResult.getText().length());
-        operation = true;
-        dotted = !edtResult.getText().toString().contains(".");
-        a = null;
-        b = null;
+    }
+
+    private void subtract(String text, int index) {
+        b = Double.parseDouble(text.substring(index + 1));
+        result = a - b;
+        String tmp = String.valueOf(result);
+        edtResult.setText(rounding(tmp));
+
+    }
+
+    private void add(String text) {
+        int index = text.indexOf('+');
+        b = Double.parseDouble(text.substring(index + 1));
+        result = a + b;
+        String tmp = String.valueOf(result);
+        edtResult.setText(rounding(tmp));
+    }
+
+    private void divide(String text) {
+        int index = text.indexOf('/');
+        b = Double.parseDouble(text.substring(index + 1));
+        if (b != 0) {
+            result = a / b;
+            String tmp = String.valueOf(result);
+            edtResult.setText(rounding(tmp));
+        } else {
+            Toast.makeText(this, "Không thể chia cho 0.", Toast.LENGTH_LONG).show();
+            edtResult.setSelection(edtResult.getText().length());
+            edtResult.setText(text);
+            dotted = false;
+            operation = false;
+            error = true;
+        }
+    }
+
+    private void multiple(String text) {
+        int index = text.indexOf('×');
+        b = Double.parseDouble(text.substring(index + 1));
+        result = a * b;
+        String tmp = String.valueOf(result);
+        edtResult.setText(rounding(tmp));
+    }
+
+    private String rounding(String temp) {
+        int temp_a = a.intValue();
+        int temp_b = b.intValue();
+        if (a == temp_a && b == temp_b) {
+            return temp.substring(0, temp.length() - 2);
+        } else if (a != temp_a || b != temp_b) {
+            return temp;
+        }
+        return null;
     }
 }
