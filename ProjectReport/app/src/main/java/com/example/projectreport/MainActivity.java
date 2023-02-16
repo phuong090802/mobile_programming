@@ -88,6 +88,12 @@ public class MainActivity extends AppCompatActivity {
 //        Lấy giá trị của EditText
         String text = edtResult.getText().toString();
 //        Nếu nhập số 0 ở đầu thì không cho nhập số 0 nữa
+        if (a != null && result != null) {
+            a = result;
+            result = null;
+            String txt = text + btn.getText().toString();
+            edtResult.setText(txt);
+        }
         if (text.equals("0") || (a != null && text.endsWith("0"))) {
             return;
         }
@@ -186,7 +192,10 @@ public class MainActivity extends AppCompatActivity {
     public void buttonDot_Click(View view) {
 //        Nếu chưa có dấu chấm và nó không có lỗi chia 0
 //        thì cho phép thêm dấu .
-        if (dot && !divideByZero) {
+        String string_a = String.valueOf(a);
+        String txt = edtResult.getText().toString();
+        String checkDot = txt.substring(string_a.length());
+        if ((dot && !divideByZero) || (a!= null && !checkDot.contains("."))) {
             Button btn = findViewById(view.getId());
             StringBuilder builder = new StringBuilder();
             builder.append(edtResult.getText().toString()).append(btn.getText().toString());
