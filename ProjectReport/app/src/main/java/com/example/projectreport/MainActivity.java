@@ -143,8 +143,7 @@ public class MainActivity extends AppCompatActivity {
         String text = btn.getText().toString();
 //        Chuỗi trên edt
         StringBuilder screen = new StringBuilder(edtResult.getText().toString());
-        if (screen.toString().endsWith("-") || screen.toString().endsWith("+") || screen.toString().endsWith("/")
-                || screen.toString().endsWith("×")) {
+        if (screen.toString().endsWith("-") || screen.toString().endsWith("+") || screen.toString().endsWith("/") || screen.toString().endsWith("×")) {
             operation = false;
         } else if (screen.toString().endsWith(".")) {
             dot = false;
@@ -172,7 +171,11 @@ public class MainActivity extends AppCompatActivity {
 //            Nếu được phép thực hiện phép toán và không có lỗi chia cho không
         } else if (operation && !divideByZero) {
 //            gán giá trị cho biến a
-            a = Double.parseDouble(screen.toString());
+            try {
+                a = Double.parseDouble(screen.toString());
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
 //            Thên phép toán vào chuỗi
             screen.append(btn.getText().toString());
             edtResult.setText(screen);
@@ -194,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
 //        thì cho phép thêm dấu .
         String string_a = String.valueOf(a);
         String txt = edtResult.getText().toString();
-        if ((dot && !divideByZero) || (a!= null && !txt.substring(string_a.length()).contains("."))) {
+        if ((dot && !divideByZero) || (a != null && !txt.substring(string_a.length()).contains("."))) {
             Button btn = findViewById(view.getId());
             StringBuilder builder = new StringBuilder();
             builder.append(edtResult.getText().toString()).append(btn.getText().toString());
@@ -226,8 +229,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void handleOperation(String text) {
+        int len = String.valueOf(a).length();
+        System.out.println(len);
+        Double check_b = null;
+        try {
+            check_b = Double.parseDouble(text.substring(len - 1));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
 //        Thực hiện phép toán khi nó được kết thức bằng 1 con số
-        if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("×") && !text.endsWith("/") && !text.endsWith(".")) {
+        if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("×") && !text.endsWith("/") && (!text.endsWith(".") || (text.endsWith(".")) && check_b != null)) {
             if (text.contains("+")) {
                 add(text);
             } else if (text.contains("-")) {
@@ -261,7 +272,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void subtract(String text, int index) {
 //        bỏ qua dấu trừ ở giũa để lấy số b và thực hiện trừ
-        b = Double.parseDouble(text.substring(index + 1));
+        try {
+            b = Double.parseDouble(text.substring(index + 1));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         result = a - b;
         edtResult.setText(String.valueOf(result));
 //        Reset
@@ -271,7 +286,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void add(String text) {
         int index = text.indexOf('+');
-        b = Double.parseDouble(text.substring(index + 1));
+        try {
+            b = Double.parseDouble(text.substring(index + 1));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         result = a + b;
         edtResult.setText(String.valueOf(result));
         a = null;
@@ -280,7 +299,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void divide(String text) {
         int index = text.indexOf('/');
-        b = Double.parseDouble(text.substring(index + 1));
+        try {
+            b = Double.parseDouble(text.substring(index + 1));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         if (b != 0) {
             result = a / b;
             edtResult.setText(String.valueOf(result));
@@ -300,7 +323,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void multiple(String text) {
         int index = text.indexOf('×');
-        b = Double.parseDouble(text.substring(index + 1));
+        try {
+            b = Double.parseDouble(text.substring(index + 1));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         result = a * b;
         edtResult.setText(String.valueOf(result));
         a = null;
