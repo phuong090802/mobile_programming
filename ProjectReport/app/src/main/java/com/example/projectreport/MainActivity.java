@@ -194,8 +194,7 @@ public class MainActivity extends AppCompatActivity {
 //        thì cho phép thêm dấu .
         String string_a = String.valueOf(a);
         String txt = edtResult.getText().toString();
-        String checkDot = txt.substring(string_a.length());
-        if ((dot && !divideByZero) || (a!= null && !checkDot.contains("."))) {
+        if ((dot && !divideByZero) || (a!= null && !txt.substring(string_a.length()).contains("."))) {
             Button btn = findViewById(view.getId());
             StringBuilder builder = new StringBuilder();
             builder.append(edtResult.getText().toString()).append(btn.getText().toString());
