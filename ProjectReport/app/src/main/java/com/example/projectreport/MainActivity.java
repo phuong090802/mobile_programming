@@ -11,6 +11,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 
 public class MainActivity extends AppCompatActivity {
     //    Biến sẽ tham chiếu đến ô hiểm thị kết quả
@@ -58,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
 //                Nếu nhập vào quá 15 số
-                if (editable.length() >= 15 && result == null) {
+                if (editable.length() >= 15) {
                     Toast.makeText(getApplicationContext(), "Không nhập nhiều hơn 15 chữ số.", Toast.LENGTH_LONG).show();
                 }
             }
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonAllClear_Click(View view) {
-//        Không cho phép thực hiện phép toán
+//        Không cho phép thực hiện phép toán (phần nhập dấu sẽ kiểm tra nếu có dấu trừ ở đầu và cho nhập)
         operation = false;
 //        Cho phép nhập giấu chấm
         dot = true;
@@ -87,13 +90,14 @@ public class MainActivity extends AppCompatActivity {
         Button btn = findViewById(view.getId());
 //        Lấy giá trị của EditText
         String text = edtResult.getText().toString();
-//        Nếu nhập số 0 ở đầu thì không cho nhập số 0 nữa
+//        Thực hiện cộng liên tục (gán a = kết quả trước, kết quả về null)
         if (a != null && result != null) {
             a = result;
             result = null;
             String txt = text + btn.getText().toString();
             edtResult.setText(txt);
         }
+//        Nếu nhập số 0 ở đầu thì không cho nhập số 0 nữa
         if (text.equals("0") || (a != null && text.endsWith("0"))) {
             return;
         }
@@ -131,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
 //            hoặc không tồn tại dấu nhân phái sau đó, 5
 //            hoặc không tồn tại dấu chia phái sau đó, 5
 //            thì cho phép nhập dấu vào
-            else if ((text.startsWith("-") && text.indexOf('-', 1) == -1) || text.indexOf('+', 1) == -1 || text.indexOf('×', 1) == -1 || text.indexOf('/', 1) == -1) {
+            else if ((text.startsWith("-") && text.indexOf('-', 1) == -1) ||
+                    text.indexOf('+', 1) == -1 || text.indexOf('×', 1) == -1 ||
+                    text.indexOf('/', 1) == -1) {
                 operation = true;
             }
         }
@@ -143,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         String text = btn.getText().toString();
 //        Chuỗi trên edt
         StringBuilder screen = new StringBuilder(edtResult.getText().toString());
+//        Nếu đã có dấu thì không cho nhập nữa (dấu - ở đầu sẽ được xử lý ở nơi khác)
         if (screen.toString().endsWith("-") || screen.toString().endsWith("+") || screen.toString().endsWith("/") || screen.toString().endsWith("×")) {
             operation = false;
         } else if (screen.toString().endsWith(".")) {
@@ -163,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
             String symbol = btn.getText().toString();
             char _symbol = symbol.charAt(0);
 //            Lấy ra ký tự của btn nếu edt chưa có chứa ký tự đó thì cho phép thực hiện phép toán
+//            Tương tự việc bấm dấu =
 //            VD: 5 + 3, 5-3, 5*3, 5/3
             String tmp = edtResult.getText().toString();
             if (tmp.indexOf(_symbol, 1) != -1) {
@@ -176,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-//            Thên phép toán vào chuỗi
+//            Thêm phép toán vào chuỗi
             screen.append(btn.getText().toString());
             edtResult.setText(screen);
 //            Không cho thực hiện phép toán vì đã tồn tại
@@ -195,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
     public void buttonDot_Click(View view) {
 //        Nếu chưa có dấu chấm và nó không có lỗi chia 0
 //        thì cho phép thêm dấu .
+//        Hoặc nếu như số a đã có dấu chấm thì kiểm tra xem, nếu số b chưa có dấu . thì cho
+//        nhập vào dấu . cho b
         String string_a = String.valueOf(a);
         String txt = edtResult.getText().toString();
         if ((dot && !divideByZero) || (a != null && !txt.substring(string_a.length()).contains("."))) {
@@ -202,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             StringBuilder builder = new StringBuilder();
             builder.append(edtResult.getText().toString()).append(btn.getText().toString());
             edtResult.setText(builder);
-//            không thể nhập thêm dấu.
+//            không thể nhập thêm dấu. nữa
             dot = false;
 //            Sau dấu . phải là số
             operation = false;
@@ -212,14 +222,21 @@ public class MainActivity extends AppCompatActivity {
     public void btnResult_Click(View view) {
         String text = edtResult.getText().toString();
 //       Giá trị biến a khác null thì được phép thực hiện phép toán
+//        (Biến a được lấy giá trị khi người dùng nhập phép toán)
         if (a != null) {
             handleOperation(text);
 //            Cho người dùng spam nút = khi đã có kết quả
         } else if (result != null) {
 //            Spam
             result += result;
-            edtResult.setText(String.valueOf(result));
-//           nếu cuối không có dấu chấm thì được thêm dấu .
+            BigDecimal _result = BigDecimal.valueOf(result);
+            result = _result.doubleValue();
+            String rs = String.valueOf(result);
+            if (_result.intValue() == result) {
+                rs = String.valueOf(_result.intValue());
+            }
+            edtResult.setText(rs);
+//           nếu kết quả không có dấu chấm thì được thêm dấu .
             dot = !edtResult.getText().toString().contains(".");
 //            Reset
             operation = true;
@@ -229,44 +246,83 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void handleOperation(String text) {
-        int len = String.valueOf(a).length();
-        System.out.println(len);
-        Double check_b = null;
-        try {
-            check_b = Double.parseDouble(text.substring(len - 1));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-//        Thực hiện phép toán khi nó được kết thức bằng 1 con số
-        if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("×") && !text.endsWith("/") && (!text.endsWith(".") || (text.endsWith(".")) && check_b != null)) {
-            if (text.contains("+")) {
-                add(text);
-            } else if (text.contains("-")) {
-//                Loại bỏ trường hợp dấu - ở đầu
-                int index = text.indexOf('-', 1);
-//                nếu không có dấu -1 ở giũa và không có dấu / ở cuối và không có dấu *,/ ở trước dấu trừ
-//                thì được thực hiện phép trừ
-                if (index != -1 && text.charAt(index - 1) != '/' && text.charAt(index - 1) != '×') {
-                    subtract(text, index);
-                } else {
-//                    Nếu a âm và nó không phải phép toán  từ thì thực hiện phép toán khác
-                    if (text.contains("+")) {
-                        add(text);
-                    } else if (text.contains("×")) {
-                        multiple(text);
-                    } else if (text.contains("/")) {
-                        divide(text);
+        if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("/") && !text.endsWith("×")) {
+            int len = String.valueOf(a).length();
+            Double check_b = null;
+            int intA = a.intValue();
+//            Nếu không chứa hằng số khoa học
+            if (!String.valueOf(a).contains("E")) {
+                if (intA == a) {
+                    //                3 + 3 (String a = 3.0, length = 3, lenght - 2 = bat dau tu so 3 phia sau)
+                    try {
+                        String check = text.substring(len - 2);
+                        String checked = check;
+                        if (check.startsWith("+") || check.startsWith("-") || check.startsWith("×")
+                                || check.startsWith("/")) {
+                            checked = check.substring(1);
+                        }
+                        check_b = Double.parseDouble(checked);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                } else if (a > intA) {
+                    //                3.3 + 3 (String a = 3.0, length = 3, lenght + 1 = bat dau tu so 3 phia sau)
+                    try {
+                        check_b = Double.parseDouble(text.substring(len + 1));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
                     }
                 }
-            } else if (text.contains("×")) {
-                multiple(text);
-            } else if (text.contains("/")) {
-                divide(text);
+            } else {
+//                Vị trí của hằng số khoa học
+                int posE = String.valueOf(a).indexOf("E");
+//                Nếu hằng số khoa học là số thực
+                if (BigDecimal.valueOf(a).toString().contains(".")) {
+                    try {
+                        check_b = Double.parseDouble(text.substring(posE + 1));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                } else { //Hằng số khoa học là số nguyên
+                    try {
+                        check_b = Double.parseDouble(text.substring(posE));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+
+//        Thực hiện phép toán khi nó được kết thức bằng 1 con số
+            if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("×") && !text.endsWith("/") && (!text.endsWith(".") || (text.endsWith(".")) && check_b != null)) {
+                if (text.contains("+")) {
+                    add(text);
+                } else if (text.contains("-")) {
+//                Loại bỏ trường hợp dấu - ở đầu
+                    int index = text.indexOf('-', 1);
+//                nếu không có dấu - ở giũa và không có dấu / ở cuối và không có dấu *,/ ở trước dấu trừ
+//                thì được thực hiện phép trừ
+                    if (index != -1 && text.charAt(index - 1) != '/' && text.charAt(index - 1) != '×') {
+                        subtract(text, index);
+                    } else {
+//                    Nếu a âm và nó không phải phép toán  từ thì thực hiện phép toán khác
+                        if (text.contains("+")) {
+                            add(text);
+                        } else if (text.contains("×")) {
+                            multiple(text);
+                        } else if (text.contains("/")) {
+                            divide(text);
+                        }
+                    }
+                } else if (text.contains("×")) {
+                    multiple(text);
+                } else if (text.contains("/")) {
+                    divide(text);
+                }
 //          Có thể thực hiện được phép toán
-            operation = true;
+                operation = true;
 //            Nếu không có dấu chấn thì được phép thêm .
-            dot = !edtResult.getText().toString().contains(".");
+                dot = !edtResult.getText().toString().contains(".");
+            }
         }
     }
 
@@ -277,8 +333,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        result = a - b;
-        edtResult.setText(String.valueOf(result));
+        String rs = resultOfOperation("-");
+        edtResult.setText(rs);
 //        Reset
         a = null;
         b = null;
@@ -291,8 +347,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        result = a + b;
-        edtResult.setText(String.valueOf(result));
+        String rs = resultOfOperation("+");
+        edtResult.setText(rs);
         a = null;
         b = null;
     }
@@ -305,8 +361,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if (b != 0) {
-            result = a / b;
-            edtResult.setText(String.valueOf(result));
+            String rs = resultOfOperation("/");
+            edtResult.setText(rs);
             a = null;
             b = null;
         } else {
@@ -314,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
             edtResult.setText(text);
 //            Nếu bị lỗi thì có thể biến a còn được dùng nên không reset
 //            3/0
-//            3/.x được làm ở btn dot
+//            3/.x (được kiểm tra ở btn dot)
             dot = false;
             operation = false;
             divideByZero = true;
@@ -328,9 +384,64 @@ public class MainActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        result = a * b;
-        edtResult.setText(String.valueOf(result));
+        String rs = resultOfOperation("×");
+        edtResult.setText(rs);
         a = null;
         b = null;
+    }
+
+    private String resultOfOperation(String op) {
+        String rs = "";
+        switch (op) {
+            case "+": {
+                BigDecimal _a = BigDecimal.valueOf(a);
+                BigDecimal _b = BigDecimal.valueOf(b);
+                BigDecimal _result = _a.add(_b);
+                result = _result.doubleValue();
+                if (result == _result.intValue()) {
+                    rs = String.valueOf(_result.intValue());
+                } else if (result > _result.intValue()) {
+                    rs = String.valueOf(result);
+                }
+            }
+            break;
+            case "-": {
+                BigDecimal _a = BigDecimal.valueOf(a);
+                BigDecimal _b = BigDecimal.valueOf(b);
+                BigDecimal _result = _a.subtract(_b);
+                result = _result.doubleValue();
+                if (result == _result.intValue()) {
+                    rs = String.valueOf(_result.intValue());
+                } else if (result > _result.intValue()) {
+                    rs = String.valueOf(result);
+                }
+            }
+            break;
+            case "×": {
+                BigDecimal _a = BigDecimal.valueOf(a);
+                BigDecimal _b = BigDecimal.valueOf(b);
+                BigDecimal _result = _a.multiply(_b);
+                result = _result.doubleValue();
+                if (result == _result.intValue()) {
+                    rs = String.valueOf(_result.intValue());
+                } else if (result > _result.intValue()) {
+                    rs = String.valueOf(result);
+                }
+            }
+            break;
+            case "/": {
+                BigDecimal _a = BigDecimal.valueOf(a);
+                BigDecimal _b = BigDecimal.valueOf(b);
+                BigDecimal _result = _a.divide(_b, RoundingMode.FLOOR);
+                result = _result.doubleValue();
+                if (result == _result.intValue()) {
+                    rs = String.valueOf(_result.intValue());
+                } else if (result > _result.intValue()) {
+                    rs = String.valueOf(result);
+                }
+            }
+            break;
+        }
+        return rs;
     }
 }
