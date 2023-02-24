@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_enabled="false">
+<!--        Chưa được kích hoạt-->
         <shape android:shape="rectangle">
-            <solid android:color="@color/ivory"/>
-            <corners android:radius="50dp"/>
+<!--            Hình dạng-->
+            <solid android:color="@color/ivory" />
+<!--            Góc của đường viền-->
+            <corners android:radius="50dp" />
         </shape>
     </item>
 
-    <item android:state_pressed="true" android:state_enabled="true">
+    <item android:state_enabled="true" android:state_pressed="true">
+<!--        Được kích hoạt và được ấn xuống-->
         <shape android:shape="rectangle">
-            <solid android:color="@color/cool_gray"/>
-            <corners android:radius="50dp"/>
+            <solid android:color="@color/cool_gray" />
+            <corners android:radius="50dp" />
         </shape>
     </item>
 </selector>

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
 //                Nếu nhập vào quá 15 số
-                if (editable.length() >= 15) {
+                if (editable.length() >= 15 && result == null) {
                     Toast.makeText(getApplicationContext(), "Không nhập nhiều hơn 15 chữ số.", Toast.LENGTH_LONG).show();
                 }
             }
@@ -207,7 +207,13 @@ public class MainActivity extends AppCompatActivity {
 //        nhập vào dấu . cho b
         String string_a = String.valueOf(a);
         String txt = edtResult.getText().toString();
-        if ((dot && !divideByZero) || (a != null && !txt.substring(string_a.length()).contains("."))) {
+        boolean checked;
+        try {
+            checked = txt.substring(string_a.length()).contains(".");
+        } catch (Exception e) {
+            checked = false;
+        }
+        if ((dot && !divideByZero) || (a != null && !checked)) {
             Button btn = findViewById(view.getId());
             StringBuilder builder = new StringBuilder();
             builder.append(edtResult.getText().toString()).append(btn.getText().toString());
@@ -246,83 +252,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void handleOperation(String text) {
-        if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("/") && !text.endsWith("×")) {
-            int len = String.valueOf(a).length();
-            Double check_b = null;
-            int intA = a.intValue();
-//            Nếu không chứa hằng số khoa học
-            if (!String.valueOf(a).contains("E")) {
-                if (intA == a) {
-                    //                3 + 3 (String a = 3.0, length = 3, lenght - 2 = bat dau tu so 3 phia sau)
-                    try {
-                        String check = text.substring(len - 2);
-                        String checked = check;
-                        if (check.startsWith("+") || check.startsWith("-") || check.startsWith("×")
-                                || check.startsWith("/")) {
-                            checked = check.substring(1);
-                        }
-                        check_b = Double.parseDouble(checked);
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                } else if (a > intA) {
-                    //                3.3 + 3 (String a = 3.0, length = 3, lenght + 1 = bat dau tu so 3 phia sau)
-                    try {
-                        check_b = Double.parseDouble(text.substring(len + 1));
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-//                Vị trí của hằng số khoa học
-                int posE = String.valueOf(a).indexOf("E");
-//                Nếu hằng số khoa học là số thực
-                if (BigDecimal.valueOf(a).toString().contains(".")) {
-                    try {
-                        check_b = Double.parseDouble(text.substring(posE + 1));
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                } else { //Hằng số khoa học là số nguyên
-                    try {
-                        check_b = Double.parseDouble(text.substring(posE));
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
 //        Thực hiện phép toán khi nó được kết thức bằng 1 con số
-            if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("×") && !text.endsWith("/") && (!text.endsWith(".") || (text.endsWith(".")) && check_b != null)) {
-                if (text.contains("+")) {
-                    add(text);
-                } else if (text.contains("-")) {
+        if (!text.endsWith("-") && !text.endsWith("+") && !text.endsWith("×") && !text.endsWith("/") && (!text.endsWith("."))) {
+            if (text.contains("+")) {
+                add(text);
+            } else if (text.contains("-")) {
 //                Loại bỏ trường hợp dấu - ở đầu
-                    int index = text.indexOf('-', 1);
+                int index = text.indexOf('-', 1);
 //                nếu không có dấu - ở giũa và không có dấu / ở cuối và không có dấu *,/ ở trước dấu trừ
 //                thì được thực hiện phép trừ
-                    if (index != -1 && text.charAt(index - 1) != '/' && text.charAt(index - 1) != '×') {
-                        subtract(text, index);
-                    } else {
+                if (index != -1 && text.charAt(index - 1) != '/' && text.charAt(index - 1) != '×') {
+                    subtract(text, index);
+                } else {
 //                    Nếu a âm và nó không phải phép toán  từ thì thực hiện phép toán khác
-                        if (text.contains("+")) {
-                            add(text);
-                        } else if (text.contains("×")) {
-                            multiple(text);
-                        } else if (text.contains("/")) {
-                            divide(text);
-                        }
+                    if (text.contains("+")) {
+                        add(text);
+                    } else if (text.contains("×")) {
+                        multiple(text);
+                    } else if (text.contains("/")) {
+                        divide(text);
                     }
-                } else if (text.contains("×")) {
-                    multiple(text);
-                } else if (text.contains("/")) {
-                    divide(text);
                 }
-//          Có thể thực hiện được phép toán
-                operation = true;
-//            Nếu không có dấu chấn thì được phép thêm .
-                dot = !edtResult.getText().toString().contains(".");
+            } else if (text.contains("×")) {
+                multiple(text);
+            } else if (text.contains("/")) {
+                divide(text);
             }
+//          Có thể thực hiện được phép toán
+            operation = true;
+//            Nếu không có dấu chấn thì được phép thêm .
+            dot = !edtResult.getText().toString().contains(".");
         }
     }
 

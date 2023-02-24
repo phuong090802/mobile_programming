@@ -10,6 +10,7 @@
     <style name="Base.TextAppearance.AppCompat.Button.custom_button_result">
         <item name="android:layout_margin">5dp</item>
         <item name="android:textSize">20sp</item>
+<!--        Do theme (Nếu dùng theme Theme.AppCompat.Light.DarkActionBar thì không cần)-->
         <item name="backgroundTint">@null</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/custom_button_result</item>
