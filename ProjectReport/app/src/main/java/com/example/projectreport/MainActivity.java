@@ -61,8 +61,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
 //                Nếu nhập vào quá 15 số
-                if (editable.length() >= 15 && result == null) {
-                    Toast.makeText(getApplicationContext(), "Không nhập nhiều hơn 15 chữ số.", Toast.LENGTH_LONG).show();
+                if (result == null) {
+                    if (editable.length() >= 15) {
+                        Toast.makeText(getApplicationContext(), "Không nhập nhiều hơn 15 chữ số.", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
