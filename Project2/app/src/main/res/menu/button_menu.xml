@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/md_search"
+        android:title="@string/search" />
+    <item
+        android:id="@+id/yourLibrary"
+        android:icon="@drawable/md_outline_library_music"
+        android:title="@string/your_library" />
+</menu>

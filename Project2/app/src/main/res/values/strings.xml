@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Project2</string>
+    <string name="search">Search</string>
+    <string name="your_library">Your Library</string>
+    <string name="do_you_want_to_listen_to">Do you want to listen to?</string>
+    <string name="browse_all">Browse all</string>
+</resources>
