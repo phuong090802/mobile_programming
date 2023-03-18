@@ -2,25 +2,28 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="180dp"
-    android:layout_height="wrap_content"
+    android:layout_height="120dp"
     android:layout_gravity="center_horizontal"
     app:cardCornerRadius="20dp"
     app:cardElevation="20dp">
 
     <ImageView
-        android:scaleType="centerCrop"
         android:id="@+id/ivCategory"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:src="@drawable/meow"
-        android:contentDescription="@string/app_name" />
+        android:layout_height="120dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:src="@drawable/meow" />
 
     <TextView
+        android:layout_marginEnd="10dp"
         android:id="@+id/tvCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="50dp"
         android:text="@string/app_name"
-        android:textAlignment="center"
         android:textColor="@color/md_theme_light_onPrimary"
         android:textSize="24sp" />
 </androidx.cardview.widget.CardView>
