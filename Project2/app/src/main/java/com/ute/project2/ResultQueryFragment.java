@@ -2,6 +2,7 @@ package com.ute.project2;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,7 +118,9 @@ public class ResultQueryFragment extends Fragment {
 
         @Override
         public boolean onQueryTextChange(String newText) {
-            if (newText.trim().length() == 0) {
+            if (TextUtils.isEmpty(newText)) {
+                tvPlayWhatYouLove.setText(R.string.play_what_you_love);
+                tvSearchFor.setText(R.string.search_for_artists_songs);
                 tvPlayWhatYouLove.setVisibility(View.VISIBLE);
                 tvSearchFor.setVisibility(View.VISIBLE);
                 rcvSong.setVisibility(View.GONE);
@@ -132,6 +135,16 @@ public class ResultQueryFragment extends Fragment {
                     list = songList.stream().filter(song -> song.getSongName().contains(newText)).collect(Collectors.toList());
                 } else {
                     list = songList.stream().filter(song -> song.getSingerName().contains(newText)).collect(Collectors.toList());
+                }
+                if (list.isEmpty()) {
+                    tvPlayWhatYouLove.setVisibility(View.VISIBLE);
+                    tvSearchFor.setVisibility(View.VISIBLE);
+                    rcvSong.setVisibility(View.GONE);
+                    nsvChoose.setVisibility(View.GONE);
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("Couldn't find \"").append(newText).append("\"");
+                    tvPlayWhatYouLove.setText(builder);
+                    tvSearchFor.setText(R.string.try_searching);
                 }
                 songAdapter = new SongAdapter(getContext(), list);
                 rcvSong.setAdapter(songAdapter);
@@ -168,4 +181,5 @@ public class ResultQueryFragment extends Fragment {
             return songList.stream().filter(song -> song.getSingerName().contains(query)).collect(Collectors.toList());
         }
     }
+
 }

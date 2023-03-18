@@ -10,4 +10,5 @@
     <string name="singer_name">Singer Name</string>
     <string name="song">Song</string>
     <string name="artists">Artists</string>
+    <string name="try_searching">Try searching using a different spelling or keyword.</string>
 </resources>
