@@ -4,4 +4,10 @@
     <string name="your_library">Your Library</string>
     <string name="do_you_want_to_listen_to">Do you want to listen to?</string>
     <string name="browse_all">Browse all</string>
+    <string name="play_what_you_love">Play what you love</string>
+    <string name="search_for_artists_songs">Search for artists, songs.</string>
+    <string name="song_name">Song Name</string>
+    <string name="singer_name">Singer Name</string>
+    <string name="song">Song</string>
+    <string name="artists">Artists</string>
 </resources>

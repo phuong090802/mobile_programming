@@ -6,10 +6,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+public class CategoryItemDecoration extends RecyclerView.ItemDecoration {
     private final int space;
 
-    public SpacesItemDecoration(int space) {
+    public CategoryItemDecoration(int space) {
         this.space = space;
     }
 

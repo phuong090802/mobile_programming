@@ -15,25 +15,25 @@ import com.ute.project2.model.Category;
 
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
     List<Category> categoryList;
     Context context;
 
-    public RecyclerViewAdapter(Context context, List<Category> categoryList) {
+    public CategoryAdapter(Context context, List<Category> categoryList) {
         this.context = context;
         this.categoryList = categoryList;
     }
 
     @NonNull
     @Override
-    public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.card_item, parent, false);
+    public CategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.card_category_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder holder, int position) {
         Category category = categoryList.get(position);
         holder.ivCategory.setImageResource(category.getCategoryImage());
         holder.tvCategory.setText(category.getCategoryName());

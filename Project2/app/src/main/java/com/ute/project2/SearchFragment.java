@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.search.SearchBar;
-import com.ute.project2.adapter.RecyclerViewAdapter;
+import com.ute.project2.adapter.CategoryAdapter;
 import com.ute.project2.model.Category;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.List;
 public class SearchFragment extends Fragment {
 
     RecyclerView recyclerView;
-    RecyclerViewAdapter recyclerViewAdapter;
+    CategoryAdapter recyclerViewAdapter;
     SearchBar sbSearch;
     NestedScrollView nestedScrollView;
     TextView tvSearch;
@@ -67,8 +67,8 @@ public class SearchFragment extends Fragment {
         categoryList.add(new Category("Category17", R.drawable.meow));
         categoryList.add(new Category("Category18", R.drawable.meow));
         categoryList.add(new Category("Category19", R.drawable.meow));
-        recyclerView.addItemDecoration(new SpacesItemDecoration(22));
-        recyclerViewAdapter = new RecyclerViewAdapter(getContext(), categoryList);
+        recyclerView.addItemDecoration(new CategoryItemDecoration(22));
+        recyclerViewAdapter = new CategoryAdapter(getContext(), categoryList);
         recyclerView.setAdapter(recyclerViewAdapter);
         nestedScrollView.setOnScrollChangeListener(setOnScrollChangeListener);
 
