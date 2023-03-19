@@ -20,7 +20,7 @@
         app:layout_constraintTop_toBottomOf="@id/frame_layout_song_for_category"
         android:id="@+id/bottom_navigation_song_for_category"
         android:layout_width="410dp"
-        android:layout_height="wrap_content"
+        android:layout_height="68dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

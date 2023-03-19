@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/loop"
+        android:icon="@drawable/md_laps"
+        android:title="@string/loop" />
+    <item
+        android:id="@+id/previous"
+        android:icon="@drawable/md_skip_previous"
+        android:title="@string/previous" />
+    <item
+        android:id="@+id/play_pause"
+        android:icon="@drawable/md_pause_circle"
+        android:title="@string/previous" />
+
+    <item
+        android:id="@+id/next"
+        android:icon="@drawable/md_skip_next"
+        android:title="@string/next" />
+
+
+    <item
+        android:id="@+id/download"
+        android:icon="@drawable/md_download"
+        android:title="@string/download" />
+</menu>

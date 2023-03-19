@@ -13,4 +13,11 @@
     <string name="try_searching">Try searching using a different spelling or keyword.</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="download">Download</string>
+    <string name="loop">Loop</string>
+    <string name="previous">Previous</string>
+    <string name="none">None</string>
+    <string name="next">Next</string>
+    <string name="_4_30">4:30</string>
+    <string name="_0_00">0:00</string>
 </resources>
