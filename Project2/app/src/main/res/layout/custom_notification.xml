@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:elevation="20dp"
+    app:cardCornerRadius="20dp"
+    app:cardPreventCornerOverlap="true">
+
+    <ImageView
+        android:id="@+id/my_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:contentDescription="@string/artists"
+        android:scaleType="centerCrop"
+        android:src="@drawable/notification" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <androidx.constraintlayout.helper.widget.Flow
+            app:layout_constraintEnd_toStartOf="@id/flow2"
+            android:id="@+id/flow1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:constraint_referenced_ids="tvNotificationSongName,tvNotificationArtistName"
+            app:flow_verticalGap="10dp"
+            app:layout_constraintBaseline_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvNotificationSongName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/song_name"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvNotificationArtistName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/singer_name"
+            android:textSize="16sp" />
+
+        <androidx.constraintlayout.helper.widget.Flow
+            app:flow_horizontalGap="20dp"
+            android:id="@+id/flow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:constraint_referenced_ids="ivPrevious,ivPlayPause,tvEndTime"
+            app:layout_constraintBaseline_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/flow1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivPrevious"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/previous"
+            android:src="@drawable/md_skip_previous" />
+
+        <ImageView
+            android:id="@+id/ivPlayPause"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/play_what_you_love"
+            android:src="@drawable/md_play_circle" />
+
+        <ImageView
+            android:id="@+id/tvEndTime"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/next"
+            android:src="@drawable/md_skip_next" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

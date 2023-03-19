@@ -29,6 +29,11 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         this.listener = listener;
     }
 
+    public SongAdapter(Context context, List<Song> songList) {
+        this.songList = songList;
+        this.context = context;
+    }
+
     @NonNull
     @Override
     public SongAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,8 +46,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         Song song = songList.get(position);
         holder.ivSong.setImageResource(song.getSongImage());
         holder.tvSongName.setText(song.getSongName());
-        holder.tvSingerName.setText(song.getSingerName());
-        holder.cvSongItem.setOnClickListener(view -> listener.onItemClicked(songList.get(position)));
+        holder.tvSingerName.setText(song.getArtistsName());
+        if (listener != null) {
+            holder.cvSongItem.setOnClickListener(view -> listener.onItemClicked(songList.get(position)));
+        }
     }
 
     @Override

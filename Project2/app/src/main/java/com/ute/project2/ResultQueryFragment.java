@@ -41,6 +41,8 @@ public class ResultQueryFragment extends Fragment implements SelectSongListener 
     MaterialButton btArtist;
     SongAdapter songAdapter;
 
+    List<Song> songList;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,7 +70,7 @@ public class ResultQueryFragment extends Fragment implements SelectSongListener 
         ivBack.setOnClickListener(onClickListener);
 
 
-        rcvSong.addItemDecoration(new SongItemDecoration(22, Database.getSongList().size()));
+        rcvSong.addItemDecoration(new SongItemDecoration(22));
 
     }
 
@@ -86,12 +88,8 @@ public class ResultQueryFragment extends Fragment implements SelectSongListener 
         }
     };
 
-    private final SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener()  {
-        final SelectSongListener listener = song -> {
-            Intent intent = new Intent(getContext(), SongActivity.class);
-            intent.putExtra("song", song);
-            startActivity(intent);
-        };
+    private final SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+
         @Override
         public boolean onQueryTextSubmit(String query) {
             return false;
@@ -111,13 +109,12 @@ public class ResultQueryFragment extends Fragment implements SelectSongListener 
                 nsvChoose.setVisibility(View.VISIBLE);
                 tvPlayWhatYouLove.setVisibility(View.GONE);
                 tvSearchFor.setVisibility(View.GONE);
-                List<Song> list;
                 if (choose) {
-                    list = Database.getSongList().stream().filter(song -> song.getSongName().contains(newText)).collect(Collectors.toList());
+                    songList = Database.getSongList().stream().filter(song -> song.getSongName().contains(newText)).collect(Collectors.toList());
                 } else {
-                    list = Database.getSongList().stream().filter(song -> song.getSingerName().contains(newText)).collect(Collectors.toList());
+                    songList = Database.getSongList().stream().filter(song -> song.getArtistsName().contains(newText)).collect(Collectors.toList());
                 }
-                if (list.isEmpty()) {
+                if (songList.isEmpty()) {
                     tvPlayWhatYouLove.setVisibility(View.VISIBLE);
                     tvSearchFor.setVisibility(View.VISIBLE);
                     rcvSong.setVisibility(View.GONE);
@@ -127,13 +124,11 @@ public class ResultQueryFragment extends Fragment implements SelectSongListener 
                     tvPlayWhatYouLove.setText(builder);
                     tvSearchFor.setText(R.string.try_searching);
                 }
-                songAdapter  = new SongAdapter(getContext(), list, listener);
-                rcvSong.setAdapter(songAdapter);
+                findByQuery(choose);
             }
             return false;
         }
     };
-
 
 
     private final View.OnClickListener btSongOnClickListener = view -> {
@@ -141,8 +136,7 @@ public class ResultQueryFragment extends Fragment implements SelectSongListener 
             choose = true;
             btSong.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_theme_dark_onPrimary, requireContext().getTheme())));
             btArtist.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_theme_light_primary, requireContext().getTheme())));
-            songAdapter = new SongAdapter(getContext(), findByQuery(choose), this);
-            rcvSong.setAdapter(songAdapter);
+            findByQuery(choose);
         }
     };
 
@@ -151,18 +145,22 @@ public class ResultQueryFragment extends Fragment implements SelectSongListener 
             choose = false;
             btSong.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_theme_light_primary, requireContext().getTheme())));
             btArtist.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_theme_dark_onPrimary, requireContext().getTheme())));
-            songAdapter = new SongAdapter(getContext(), findByQuery(choose), this);
-            rcvSong.setAdapter(songAdapter);
+            findByQuery(choose);
         }
     };
 
-    public List<Song> findByQuery(boolean flag) {
+    public void findByQuery(boolean flag) {
+        if (songList != null) {
+            songList.clear();
+        }
         String query = svSearch.getQuery().toString();
         if (flag) {
-            return Database.getSongList().stream().filter(song -> song.getSongName().contains(query)).collect(Collectors.toList());
+            songList = Database.getSongList().stream().filter(song -> song.getSongName().contains(query)).collect(Collectors.toList());
         } else {
-            return Database.getSongList().stream().filter(song -> song.getSingerName().contains(query)).collect(Collectors.toList());
+            songList = Database.getSongList().stream().filter(song -> song.getArtistsName().contains(query)).collect(Collectors.toList());
         }
+        songAdapter = new SongAdapter(getContext(), songList, this);
+        rcvSong.setAdapter(songAdapter);
     }
 
     @Override

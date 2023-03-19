@@ -41,7 +41,7 @@ public class SongActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Song song = (Song) intent.getSerializableExtra("song");
         tbTop.setTitle(song.getSongName());
-        tbTop.setSubtitle(song.getSingerName());
+        tbTop.setSubtitle(song.getArtistsName());
         ivSongImage.setImageResource(song.getSongImage());
         DateFormat formatter = new SimpleDateFormat("mm:ss", Locale.getDefault());
         String time = formatter.format(new Date(song.getSongTime()));

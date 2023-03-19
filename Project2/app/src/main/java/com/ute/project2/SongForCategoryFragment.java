@@ -53,7 +53,7 @@ public class SongForCategoryFragment extends Fragment implements SelectSongListe
         tvMainCategoryName.setText(categoryName);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rcvSongForCategory.setLayoutManager(linearLayoutManager);
-        rcvSongForCategory.addItemDecoration(new SongItemDecoration(22, songList.size()));
+        rcvSongForCategory.addItemDecoration(new SongItemDecoration(22));
         SongAdapter songAdapter = new SongAdapter(getContext(), songList, this);
         rcvSongForCategory.setAdapter(songAdapter);
     }
