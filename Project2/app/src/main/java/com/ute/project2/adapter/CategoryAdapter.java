@@ -8,9 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ute.project2.R;
+import com.ute.project2.SelectCategoryListener;
 import com.ute.project2.model.Category;
 
 import java.util.List;
@@ -19,10 +21,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     List<Category> categoryList;
     Context context;
+    SelectCategoryListener selectCategoryListener;
 
-    public CategoryAdapter(Context context, List<Category> categoryList) {
+    public CategoryAdapter(Context context, List<Category> categoryList, SelectCategoryListener selectCategoryListener) {
         this.context = context;
         this.categoryList = categoryList;
+        this.selectCategoryListener = selectCategoryListener;
     }
 
     @NonNull
@@ -37,7 +41,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         Category category = categoryList.get(position);
         holder.ivCategory.setImageResource(category.getCategoryImage());
         holder.tvCategory.setText(category.getCategoryName());
+        holder.cardViewCategory.setOnClickListener(view -> selectCategoryListener.onItemClicked(categoryList.get(position)));
     }
+
 
     @Override
     public int getItemCount() {
@@ -47,11 +53,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivCategory;
         TextView tvCategory;
+        CardView cardViewCategory;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivCategory = itemView.findViewById(R.id.ivCategory);
             tvCategory = itemView.findViewById(R.id.tvCategory);
+            cardViewCategory = itemView.findViewById(R.id.cardViewCategory);
         }
     }
 }

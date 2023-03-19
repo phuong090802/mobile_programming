@@ -1,6 +1,8 @@
 package com.ute.project2.model;
 
-public class Category {
+import java.io.Serializable;
+
+public class Category implements Serializable {
     private final String categoryName;
     private final int categoryImage;
 

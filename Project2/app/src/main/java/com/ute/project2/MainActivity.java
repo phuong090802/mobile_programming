@@ -6,33 +6,32 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomNavigationListener {
 
+    BottomNavigationView bottomNavigationView;
+    BottomNavigationManager bottomNavigationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationManager = new BottomNavigationManager(this, bottomNavigationView);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new SearchFragment()).commit();
-        bottomNavigationView.setOnItemSelectedListener(onItemSelectedListener);
     }
 
-    private final NavigationBarView.OnItemSelectedListener onItemSelectedListener = item -> {
+    @Override
+    public void onBottomNavigationItemSelected(int itemId) {
         Fragment selectedFragment = null;
-        int fragmentId = item.getItemId();
 
-        if (fragmentId == R.id.search) {
+        if (itemId == R.id.search) {
             selectedFragment = new SearchFragment();
-        } else if (fragmentId == R.id.yourLibrary) {
+        } else if (itemId == R.id.yourLibrary) {
             selectedFragment = new YourLibraryFragment();
         }
         if (selectedFragment != null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
-            return true;
         }
-        return false;
-    };
+    }
 }

@@ -8,9 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ute.project2.R;
+import com.ute.project2.SelectSongListener;
 import com.ute.project2.model.Song;
 
 import java.util.List;
@@ -19,10 +21,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     List<Song> songList;
     Context context;
+    SelectSongListener listener;
 
-    public SongAdapter(Context context, List<Song> songList) {
+    public SongAdapter(Context context, List<Song> songList, SelectSongListener listener) {
         this.context = context;
         this.songList = songList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -38,6 +42,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.ivSong.setImageResource(song.getSongImage());
         holder.tvSongName.setText(song.getSongName());
         holder.tvSingerName.setText(song.getSingerName());
+        holder.cvSongItem.setOnClickListener(view -> listener.onItemClicked(songList.get(position)));
     }
 
     @Override
@@ -49,12 +54,14 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         ImageView ivSong;
         TextView tvSongName;
         TextView tvSingerName;
+        CardView cvSongItem;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivSong = itemView.findViewById(R.id.ivSong);
             tvSongName = itemView.findViewById(R.id.tvSongName);
             tvSingerName = itemView.findViewById(R.id.tvSingerName);
+            cvSongItem = itemView.findViewById(R.id.cvSongItem);
 
         }
     }

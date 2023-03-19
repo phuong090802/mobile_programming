@@ -1,6 +1,8 @@
 package com.ute.project2.model;
 
-public class Song {
+import java.io.Serializable;
+
+public class Song implements Serializable {
     private final String songName;
     private final int songImage;
     private final int songSource;

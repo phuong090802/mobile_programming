@@ -17,12 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.search.SearchBar;
 import com.ute.project2.adapter.CategoryAdapter;
+import com.ute.project2.database.Database;
 import com.ute.project2.model.Category;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements SelectCategoryListener {
 
     RecyclerView recyclerView;
     CategoryAdapter recyclerViewAdapter;
@@ -46,29 +44,9 @@ public class SearchFragment extends Fragment {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        List<Category> categoryList = new ArrayList<>();
         sbSearch.setOnClickListener(onClickListener);
-        categoryList.add(new Category("Category1", R.drawable.meow));
-        categoryList.add(new Category("Category2", R.drawable.meow));
-        categoryList.add(new Category("Category3", R.drawable.meow));
-        categoryList.add(new Category("Category4", R.drawable.meow));
-        categoryList.add(new Category("Category5", R.drawable.meow));
-        categoryList.add(new Category("Category6", R.drawable.meow));
-        categoryList.add(new Category("Category7", R.drawable.meow));
-        categoryList.add(new Category("Category8", R.drawable.meow));
-        categoryList.add(new Category("Category9", R.drawable.meow));
-        categoryList.add(new Category("Category10", R.drawable.meow));
-        categoryList.add(new Category("Category11", R.drawable.meow));
-        categoryList.add(new Category("Category12", R.drawable.meow));
-        categoryList.add(new Category("Category13", R.drawable.meow));
-        categoryList.add(new Category("Category14", R.drawable.meow));
-        categoryList.add(new Category("Category15", R.drawable.meow));
-        categoryList.add(new Category("Category16", R.drawable.meow));
-        categoryList.add(new Category("Category17", R.drawable.meow));
-        categoryList.add(new Category("Category18", R.drawable.meow));
-        categoryList.add(new Category("Category19", R.drawable.meow));
         recyclerView.addItemDecoration(new CategoryItemDecoration(22));
-        recyclerViewAdapter = new CategoryAdapter(getContext(), categoryList);
+        recyclerViewAdapter = new CategoryAdapter(getContext(), Database.getCategoryList(), this);
         recyclerView.setAdapter(recyclerViewAdapter);
         nestedScrollView.setOnScrollChangeListener(setOnScrollChangeListener);
 
@@ -90,4 +68,11 @@ public class SearchFragment extends Fragment {
             }
         }
     };
+
+    @Override
+    public void onItemClicked(Category category) {
+        Intent intent = new Intent(getContext(), CategoryActivity.class);
+        intent.putExtra("category", category);
+        startActivity(intent);
+    }
 }

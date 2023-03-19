@@ -1,5 +1,6 @@
 package com.ute.project2;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,19 +20,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.ute.project2.adapter.SongAdapter;
+import com.ute.project2.database.Database;
 import com.ute.project2.model.Song;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ResultQueryFragment extends Fragment {
+public class ResultQueryFragment extends Fragment implements SelectSongListener {
 
     ImageView ivBack;
 
     SearchView svSearch;
-
-    List<Song> songList;
 
     RecyclerView rcvSong;
     TextView tvPlayWhatYouLove;
@@ -67,32 +66,9 @@ public class ResultQueryFragment extends Fragment {
         svSearch.setOnQueryTextListener(onQueryTextListener);
         ivBack = view.findViewById(R.id.ivBack);
         ivBack.setOnClickListener(onClickListener);
-        songList = new ArrayList<>();
-        songList.add(new Song("Neil", R.drawable.meow, R.raw.file_example, 2, "Skyler", "Skyler"));
-        songList.add(new Song("Salem", R.drawable.meow, R.raw.file_example, 2, "Mohammed", "Mohammed"));
-        songList.add(new Song("Remi", R.drawable.meow, R.raw.file_example, 2, "Dennis", "Dennis"));
-        songList.add(new Song("Liam", R.drawable.meow, R.raw.file_example, 2, "Kareem", "Nixon"));
-        songList.add(new Song("Noah", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Rex"));
-        songList.add(new Song("Oliver", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Uriah"));
-        songList.add(new Song("Elijah", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Lee"));
-        songList.add(new Song("James", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Louie"));
-        songList.add(new Song("William", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Alberto"));
-        songList.add(new Song("Benjamin", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Reese"));
-        songList.add(new Song("Lucas", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Quinton"));
-        songList.add(new Song("Henry", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Kingsley"));
-        songList.add(new Song("Theodore", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Chaim"));
-        songList.add(new Song("Jack", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Alfredo"));
-        songList.add(new Song("Levi", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Mauricio"));
-        songList.add(new Song("Alexander", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Caspian"));
-        songList.add(new Song("Jackson", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Legacy"));
-        songList.add(new Song("Mateo", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Ocean"));
-        songList.add(new Song("Daniel", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Ozzy"));
-        songList.add(new Song("Michael", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Briar"));
-        songList.add(new Song("Mason", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Wilson"));
-        songList.add(new Song("Sebastian", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Forest"));
-        songList.add(new Song("Ethan", R.drawable.meow, R.raw.file_example, 2, "Category Name", "Grey"));
 
-        rcvSong.addItemDecoration(new SongItemDecoration(22, songList.size()));
+
+        rcvSong.addItemDecoration(new SongItemDecoration(22, Database.getSongList().size()));
 
     }
 
@@ -110,7 +86,12 @@ public class ResultQueryFragment extends Fragment {
         }
     };
 
-    private final SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+    private final SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener()  {
+        final SelectSongListener listener = song -> {
+            Intent intent = new Intent(getContext(), SongActivity.class);
+            intent.putExtra("song", song);
+            startActivity(intent);
+        };
         @Override
         public boolean onQueryTextSubmit(String query) {
             return false;
@@ -132,9 +113,9 @@ public class ResultQueryFragment extends Fragment {
                 tvSearchFor.setVisibility(View.GONE);
                 List<Song> list;
                 if (choose) {
-                    list = songList.stream().filter(song -> song.getSongName().contains(newText)).collect(Collectors.toList());
+                    list = Database.getSongList().stream().filter(song -> song.getSongName().contains(newText)).collect(Collectors.toList());
                 } else {
-                    list = songList.stream().filter(song -> song.getSingerName().contains(newText)).collect(Collectors.toList());
+                    list = Database.getSongList().stream().filter(song -> song.getSingerName().contains(newText)).collect(Collectors.toList());
                 }
                 if (list.isEmpty()) {
                     tvPlayWhatYouLove.setVisibility(View.VISIBLE);
@@ -146,19 +127,21 @@ public class ResultQueryFragment extends Fragment {
                     tvPlayWhatYouLove.setText(builder);
                     tvSearchFor.setText(R.string.try_searching);
                 }
-                songAdapter = new SongAdapter(getContext(), list);
+                songAdapter  = new SongAdapter(getContext(), list, listener);
                 rcvSong.setAdapter(songAdapter);
             }
             return false;
         }
     };
 
+
+
     private final View.OnClickListener btSongOnClickListener = view -> {
         if (!choose) {
             choose = true;
             btSong.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_theme_dark_onPrimary, requireContext().getTheme())));
             btArtist.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_theme_light_primary, requireContext().getTheme())));
-            songAdapter = new SongAdapter(getContext(), findByQuery(choose));
+            songAdapter = new SongAdapter(getContext(), findByQuery(choose), this);
             rcvSong.setAdapter(songAdapter);
         }
     };
@@ -168,7 +151,7 @@ public class ResultQueryFragment extends Fragment {
             choose = false;
             btSong.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_theme_light_primary, requireContext().getTheme())));
             btArtist.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_theme_dark_onPrimary, requireContext().getTheme())));
-            songAdapter = new SongAdapter(getContext(), findByQuery(choose));
+            songAdapter = new SongAdapter(getContext(), findByQuery(choose), this);
             rcvSong.setAdapter(songAdapter);
         }
     };
@@ -176,10 +159,16 @@ public class ResultQueryFragment extends Fragment {
     public List<Song> findByQuery(boolean flag) {
         String query = svSearch.getQuery().toString();
         if (flag) {
-            return songList.stream().filter(song -> song.getSongName().contains(query)).collect(Collectors.toList());
+            return Database.getSongList().stream().filter(song -> song.getSongName().contains(query)).collect(Collectors.toList());
         } else {
-            return songList.stream().filter(song -> song.getSingerName().contains(query)).collect(Collectors.toList());
+            return Database.getSongList().stream().filter(song -> song.getSingerName().contains(query)).collect(Collectors.toList());
         }
     }
 
+    @Override
+    public void onItemClicked(Song song) {
+        Intent intent = new Intent(getContext(), SongActivity.class);
+        intent.putExtra("song", song);
+        startActivity(intent);
+    }
 }
