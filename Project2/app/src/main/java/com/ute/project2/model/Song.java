@@ -42,4 +42,16 @@ public class Song implements Serializable {
     public String getArtistsName() {
         return artistsName;
     }
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "songName='" + songName + '\'' +
+                ", songImage=" + songImage +
+                ", songSource=" + songSource +
+                ", songTime=" + songTime +
+                ", genreName='" + genreName + '\'' +
+                ", artistsName='" + artistsName + '\'' +
+                '}';
+    }
 }

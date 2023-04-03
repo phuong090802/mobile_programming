@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,6 +20,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.database.Database;
 import com.ute.project2.model.Song;
+import com.ute.project2.sharedpreferences.StorageSingleton;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,6 +37,7 @@ public class SongFragment extends Fragment {
     ImageView ivPrevious;
     ImageView ivPlayPause;
     ImageView ivNext;
+    private String songName;
 
 
     @Override
@@ -57,6 +60,12 @@ public class SongFragment extends Fragment {
         if (bundle != null) {
             globalSong = (Song) bundle.get("song");
             isPlaying = bundle.getBoolean("isPlaying", false);
+
+            songName = StorageSingleton.getSong(Constant.KEY_SONG);
+            Toast.makeText(context, "Storage: " + songName + ", Card: " + globalSong.getSongName(), Toast.LENGTH_SHORT).show();
+            if (globalSong.getSongName().equals(songName)) {
+                isPlaying = true;
+            }
             if (isPlaying) {
                 ivPlayPause.setImageResource(R.drawable.md_pause_circle);
             }
@@ -106,9 +115,13 @@ public class SongFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, MyService.class);
+            if (!songName.equals("N/A") && !songName.equals(tbTop.getSubtitle().toString())) {
+                context.stopService(intent);
+            }
             if (!isPlaying) {
                 ivPlayPause.setImageResource(R.drawable.md_pause_circle);
                 intent.putExtra("song", globalSong);
+                putData(globalSong);
                 isPlaying = true;
             } else {
                 ivPlayPause.setImageResource(R.drawable.md_play_circle);
@@ -116,6 +129,7 @@ public class SongFragment extends Fragment {
             }
             intent.putExtra("isPlaying", isPlaying);
             context.startService(intent);
+
         }
     };
 
@@ -128,10 +142,9 @@ public class SongFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         if (getActivity() != null) {
-            if (getActivity().isFinishing() && !isPlaying) {
-                Intent intent = new Intent(context, MyService.class);
-                context.stopService(intent);
+            if (getActivity().isFinishing() && !isPlaying && songName.equals("N/A")) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+                eventOnDestroy();
             }
         }
     }
@@ -139,11 +152,9 @@ public class SongFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        if (!isPlaying) {
-            Intent intent = new Intent(context, MyService.class);
-            context.stopService(intent);
+        if (!isPlaying && songName.equals("N/A")) {
+            eventOnDestroy();
         }
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
     }
 
     private void changeSong() {
@@ -160,4 +171,19 @@ public class SongFragment extends Fragment {
         intent.putExtra("isPlaying", isPlaying);
         context.startService(intent);
     }
+
+    private void eventOnDestroy() {
+        Intent intent = new Intent(context, MyService.class);
+        context.stopService(intent);
+    }
+
+    private void putData(Song song) {
+        StorageSingleton.putSong(Constant.KEY_SONG, song.getSongName());
+    }
+//    region
+//    private void putData(Song song, boolean flag) {
+//        StorageSingleton.putSong(Constant.KEY_SONG, song);
+//        StorageSingleton.putBoolean(Constant.KEY_BOOLEAN, flag);
+//    }
+//    endregion
 }

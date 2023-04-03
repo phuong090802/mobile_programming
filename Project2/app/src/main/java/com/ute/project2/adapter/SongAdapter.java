@@ -28,10 +28,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         this.listener = listener;
     }
 
-    public SongAdapter(Context context, List<Song> songList) {
-        this.songList = songList;
-        this.context = context;
-    }
+//    region
+//    public SongAdapter(Context context, List<Song> songList) {
+//        this.songList = songList;
+//        this.context = context;
+//    }
+//    endregion
 
     @NonNull
     @Override

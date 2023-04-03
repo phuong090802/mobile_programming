@@ -15,8 +15,6 @@ public class ChangeSongReceiver extends BroadcastReceiver {
         sendToService.putExtra("song", song);
         sendToService.putExtra("isPlaying", isPlaying);
         sendToService.putExtra("renew", true);
-
-        Intent sendToFragment = new Intent(context, SongFragment.class);
         context.startService(sendToService);
     }
 }

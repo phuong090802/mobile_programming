@@ -17,6 +17,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.database.Database;
 import com.ute.project2.model.Song;
+import com.ute.project2.sharedpreferences.StorageSingleton;
 
 public class MyService extends Service {
     private boolean globalIsPlaying;
@@ -139,6 +140,7 @@ public class MyService extends Service {
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
+            StorageSingleton.putSong(Constant.KEY_SONG, "N/A");
         }
     }
 }

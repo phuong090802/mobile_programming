@@ -10,9 +10,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.ute.project2.constant.Constant;
 import com.ute.project2.event.OnViewClickListener;
 import com.ute.project2.model.Genre;
 import com.ute.project2.model.Song;
+import com.ute.project2.sharedpreferences.StorageSingleton;
 
 import java.util.Stack;
 
