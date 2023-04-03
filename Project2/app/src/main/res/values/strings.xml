@@ -2,23 +2,26 @@
     <string name="app_name">Music &amp; Fm</string>
     <string name="search">Search</string>
     <string name="your_library">Your Library</string>
-    <string name="do_you_want_to_listen_to">Do you want to listen to?</string>
     <string name="browse_all">Browse all</string>
+    <string name="do_you_want_to_listen_to">Do you want to listen to?</string>
+    <string name="song">Song</string>
+    <string name="artists">Artists</string>
     <string name="play_what_you_love">Play what you love</string>
     <string name="search_for_artists_songs">Search for artists, songs.</string>
     <string name="song_name">Song Name</string>
-    <string name="singer_name">Singer Name</string>
-    <string name="song">Song</string>
-    <string name="artists">Artists</string>
+    <string name="artist_name">Artist Name</string>
     <string name="try_searching">Try searching using a different spelling or keyword.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="favorites">Favorites</string>
     <string name="download">Download</string>
+    <string name="_0_00">0:00</string>
+    <string name="_4_30">4:30</string>
     <string name="loop">Loop</string>
     <string name="previous">Previous</string>
-    <string name="none">None</string>
+    <string name="play">Play</string>
     <string name="next">Next</string>
-    <string name="_4_30">4:30</string>
-    <string name="_0_00">0:00</string>
-    <string name="favorites">Favorites</string>
+    <string name="chanel_name">Music &amp; Fm</string>
+    <string name="pause">Pause</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

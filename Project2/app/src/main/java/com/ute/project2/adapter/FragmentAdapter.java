@@ -8,7 +8,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import java.util.List;
 
 public class FragmentAdapter extends FragmentStateAdapter {
-
     private final List<Fragment> fragmentList;
 
     public FragmentAdapter(@NonNull FragmentActivity fragmentActivity, List<Fragment> fragmentList) {

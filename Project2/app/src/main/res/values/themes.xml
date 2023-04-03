@@ -1,5 +1,4 @@
 <resources>
-
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
@@ -17,9 +16,9 @@
         <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
         <item name="colorOnError">@color/md_theme_light_onError</item>
         <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
-        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="android:colorBackground">@color/md_theme_light_inversePrimary</item>
         <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
-        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorSurface">@color/md_theme_light_onBackground</item>
         <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
         <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
         <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
@@ -27,14 +26,15 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+        <item name="fontFamily">@font/montserrat_regular</item>
     </style>
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation duration. -->
-        <item name="windowSplashScreenBackground">@color/md_theme_light_surfaceVariant</item>
+        <item name="windowSplashScreenBackground">@color/splash_bg</item>
 
         <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
              animated drawable. One of these is required. -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
         <!-- Required for animated icons -->
         <item name="windowSplashScreenAnimationDuration">2000</item>
 

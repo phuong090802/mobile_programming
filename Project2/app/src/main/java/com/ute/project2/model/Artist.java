@@ -17,4 +17,3 @@ public class Artist {
         return imageArtist;
     }
 }
-

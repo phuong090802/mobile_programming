@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
     android:orientation="vertical"
+    android:padding="8dp"
     tools:context=".SearchFragment">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_marginStart="17dp"
+    <TextView
         android:id="@+id/tvSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="17dp"
         android:text="@string/search"
         android:textSize="24sp" />
 
@@ -37,15 +37,15 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_marginStart="17dp"
                 android:id="@+id/tvBrowseAll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
                 android:text="@string/browse_all"
                 android:textSize="20sp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcCategory"
+                android:id="@+id/rcGenre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false" />

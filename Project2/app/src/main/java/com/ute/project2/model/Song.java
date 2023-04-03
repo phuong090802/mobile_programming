@@ -7,16 +7,16 @@ public class Song implements Serializable {
     private final int songImage;
     private final int songSource;
     private final long songTime;
-    private final String categoryName;
+    private final String genreName;
     private final String artistsName;
 
-    public Song(String songName, int songImage, int songSource, long songTime, String categoryName, String singer) {
+    public Song(String songName, int songImage, int songSource, long songTime, String genreName, String artistsName) {
         this.songName = songName;
         this.songImage = songImage;
         this.songSource = songSource;
         this.songTime = songTime;
-        this.categoryName = categoryName;
-        this.artistsName = singer;
+        this.genreName = genreName;
+        this.artistsName = artistsName;
     }
 
     public String getSongName() {
@@ -35,8 +35,8 @@ public class Song implements Serializable {
         return songTime;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public String getGenreName() {
+        return genreName;
     }
 
     public String getArtistsName() {

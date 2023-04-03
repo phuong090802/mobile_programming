@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SongFragment">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tbTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/ivSongImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:subtitle="@string/song_name"
+        app:title="@string/song" />
+
+    <ImageView
+        android:id="@+id/ivSongImage"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="matrix"
+        android:src="@drawable/song"
+        app:layout_constraintBottom_toTopOf="@id/flow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tbTop" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:constraint_referenced_ids="tvCountDown,sliderTime,tvEnd"
+        app:flow_horizontalGap="8dp"
+        app:layout_constraintBottom_toTopOf="@id/flow_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivSongImage" />
+
+    <TextView
+        android:id="@+id/tvCountDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_0_00" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/sliderTime"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/your_library"
+        android:text="@string/search" />
+
+    <TextView
+        android:id="@+id/tvEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_4_30" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:layout_marginBottom="10dp"
+        android:id="@+id/flow_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:constraint_referenced_ids="ivPrevious,ivPlayPause,ivNext"
+        app:flow_horizontalGap="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/flow" />
+
+    <ImageView
+        android:id="@+id/ivPrevious"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="@string/previous"
+        android:src="@drawable/md_skip_previous" />
+
+    <ImageView
+        android:id="@+id/ivPlayPause"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="@string/play_what_you_love"
+        android:src="@drawable/md_play_circle" />
+
+    <ImageView
+        android:id="@+id/ivNext"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="@string/next"
+        android:src="@drawable/md_skip_next" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

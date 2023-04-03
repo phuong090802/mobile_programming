@@ -14,7 +14,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@string/song_name"
-            android:src="@drawable/category" />
+            android:src="@drawable/genre" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,10 +31,10 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/tvSingerName"
+                android:id="@+id/tvArtistName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/singer_name" />
+                android:text="@string/artist_name" />
         </LinearLayout>
     </LinearLayout>
 
