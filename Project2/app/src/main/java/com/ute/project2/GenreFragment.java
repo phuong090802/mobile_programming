@@ -67,6 +67,7 @@ public class GenreFragment extends Fragment implements SelectSongListener {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new ItemDecoration(22));
+
         SongAdapter adapter = new SongAdapter(getContext(), songList, this);
         recyclerView.setAdapter(adapter);
         return view;

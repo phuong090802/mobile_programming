@@ -1,6 +1,7 @@
 package com.ute.project2.event;
 
 import com.ute.project2.model.Genre;
+import com.ute.project2.model.ItemLibrary;
 import com.ute.project2.model.Song;
 
 public interface OnViewClickListener {
@@ -9,4 +10,5 @@ public interface OnViewClickListener {
     void onCardViewGenreClicked(Genre genre);
 
     void onItemSongClicked(Song song);
+    void onItemLibraryOnClick(ItemLibrary itemLibrary);
 }

@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:padding="8dp"
     tools:context=".YourLibraryFragment">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tlHeader"
+    <TextView
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:id="@+id/tvLibrary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/app_name"/>
+        android:layout_marginHorizontal="17dp"
+        android:text="@string/library"
+        android:textSize="24sp" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/vpContent"
+    <ImageView
+        android:layout_marginVertical="10dp"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:id="@+id/imageLibrary"
+        android:contentDescription="@string/library"
+        android:layout_below="@id/tvLibrary"
+        android:src="@drawable/artist"
+        android:layout_width="wrap_content"
+        android:layout_height="500dp"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@id/imageLibrary"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/recycler_view_library"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/app_name" />
-</LinearLayout>
+        android:layout_height="wrap_content" />
+</RelativeLayout>

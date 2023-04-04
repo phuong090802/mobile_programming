@@ -11,15 +11,17 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.ute.project2.constant.Constant;
+import com.ute.project2.event.ItemLibraryListener;
 import com.ute.project2.event.OnViewClickListener;
 import com.ute.project2.model.Genre;
+import com.ute.project2.model.ItemLibrary;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 
 import java.util.Stack;
 
 
-public class MainActivity extends AppCompatActivity implements OnViewClickListener {
+public class MainActivity extends AppCompatActivity implements OnViewClickListener, ItemLibraryListener {
     BottomNavigationView bottomNavigationView;
     private final Stack<Fragment> fragmentStack = new Stack<>();
 
@@ -112,6 +114,15 @@ public class MainActivity extends AppCompatActivity implements OnViewClickListen
         bundle.putSerializable("song", song);
         songFragment.setArguments(bundle);
         replaceFragment(songFragment);
+    }
+
+    @Override
+    public void onItemLibraryOnClick(ItemLibrary itemLibrary) {
+        if (itemLibrary.getText() == R.string.favorites) {
+            replaceFragment(new FavoriteFragment());
+        } else if (itemLibrary.getText() == R.string.download) {
+            replaceFragment(new DownloadFragment());
+        }
     }
 
 }

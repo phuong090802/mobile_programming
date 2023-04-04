@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,16 +20,10 @@ import com.ute.project2.database.Database;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class SongFragment extends Fragment {
     Song globalSong;
     MaterialToolbar tbTop;
     ImageView ivSongImage;
-    TextView tvEnd;
     boolean isPlaying;
     Context context;
     ImageView ivPrevious;
@@ -64,7 +56,6 @@ public class SongFragment extends Fragment {
             String current = StorageSingleton.getString(Constant.CURRENT_SONG_NAME);
             String storage = StorageSingleton.getString(Constant.STORAGE_SONG_NAME);
             globalCheck = current.equals(storage);
-            Toast.makeText(context, "current: " + current + ", storage: " + storage, Toast.LENGTH_SHORT).show();
             if (storage == null) {
                 globalCheck = true;
             }
@@ -88,10 +79,7 @@ public class SongFragment extends Fragment {
         ivSongImage = view.findViewById(R.id.ivSongImage);
         ivSongImage.setImageResource(globalSong.getSongImage());
 
-        tvEnd = view.findViewById(R.id.tvEnd);
-        DateFormat formatter = new SimpleDateFormat("mm:ss", Locale.getDefault());
-        String time = formatter.format(new Date(globalSong.getSongTime()));
-        tvEnd.setText(time);
+
 
         return view;
     }

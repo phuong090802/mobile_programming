@@ -11,17 +11,17 @@
     <string name="song_name">Song Name</string>
     <string name="artist_name">Artist Name</string>
     <string name="try_searching">Try searching using a different spelling or keyword.</string>
-    <string name="favorites">Favorites</string>
-    <string name="download">Download</string>
-    <string name="_0_00">0:00</string>
-    <string name="_4_30">4:30</string>
-    <string name="loop">Loop</string>
     <string name="previous">Previous</string>
-    <string name="play">Play</string>
     <string name="next">Next</string>
     <string name="chanel_name">Music &amp; Fm</string>
-    <string name="pause">Pause</string>
+    <string name="songs_you_download_will_appear_here">Songs you download will appear here</string>
+    <string name="library">Library</string>
+    <string name="favorites">Favorites</string>
+    <string name="download">Download</string>
+    <string name="nothing_to_show">Nothing to show</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="downloads">Downloads</string>
+    <string name="songs_you_favorites_will_appear_here">Songs you favorites will appear here</string>
 </resources>
