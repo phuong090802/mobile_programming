@@ -5,7 +5,6 @@ public class Constant {
     public static final int ID_START_FOREGROUND = 1;
     public static final int REQUEST_CODE = 1;
     public static final String ACTION = "fromMyService";
-    public static final String STORAGE_NAME = "STORAGE_NAME";
-    public static final String KEY_SONG = "KEY_SONG";
-    public static final String KEY_BOOLEAN = "KEY_BOOLEAN";
+    public static final String STORAGE_SONG_NAME = "STORAGE_SONG_NAME";
+    public static final String CURRENT_SONG_NAME = "CURRENT_SONG_NAME";
 }

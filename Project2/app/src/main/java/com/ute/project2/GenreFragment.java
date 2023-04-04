@@ -15,12 +15,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ute.project2.adapter.SongAdapter;
+import com.ute.project2.constant.Constant;
 import com.ute.project2.database.Database;
 import com.ute.project2.decoration.ItemDecoration;
 import com.ute.project2.event.OnViewClickListener;
 import com.ute.project2.event.SelectSongListener;
 import com.ute.project2.model.Genre;
 import com.ute.project2.model.Song;
+import com.ute.project2.sharedpreferences.StorageSingleton;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -91,5 +93,6 @@ public class GenreFragment extends Fragment implements SelectSongListener {
     @Override
     public void onItemClicked(Song song) {
         onViewClickListener.onItemSongClicked(song);
+        StorageSingleton.putString(Constant.CURRENT_SONG_NAME, song.getSongName());
     }
 }

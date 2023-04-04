@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements OnViewClickListen
         if (getIntent() != null && getIntent().hasExtra("song") && getIntent().hasExtra("isPlaying")) {
             Song song = (Song) getIntent().getSerializableExtra("song");
             boolean isPlaying = getIntent().getBooleanExtra("isPlaying", false);
+            StorageSingleton.putString(Constant.CURRENT_SONG_NAME, song.getSongName());
+            StorageSingleton.putString(Constant.STORAGE_SONG_NAME, song.getSongName());
             fragmentStack.push(new SearchFragment());
             SongFragment songFragment = new SongFragment();
             Bundle bundle = new Bundle();

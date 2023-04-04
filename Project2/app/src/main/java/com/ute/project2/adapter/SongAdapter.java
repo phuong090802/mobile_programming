@@ -28,13 +28,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         this.listener = listener;
     }
 
-//    region
-//    public SongAdapter(Context context, List<Song> songList) {
-//        this.songList = songList;
-//        this.context = context;
-//    }
-//    endregion
-
     @NonNull
     @Override
     public SongAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -49,7 +42,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.tvSongName.setText(song.getSongName());
         holder.tvArtistName.setText(song.getArtistsName());
         if (listener != null) {
-            holder.cvSongItem.setOnClickListener(view -> listener.onItemClicked(songList.get(position)));
+            holder.cvSongItem.setOnClickListener(view -> listener.onItemClicked(song));
         }
     }
 

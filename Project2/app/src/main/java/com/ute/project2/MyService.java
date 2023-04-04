@@ -40,6 +40,7 @@ public class MyService extends Service {
             globalSong = song;
             createMediaPlayer(globalSong);
             sendNotification(globalSong);
+
         } else {
             if (mediaPlayer != null && globalIsPlaying) {
                 mediaPlayer.start();
@@ -49,6 +50,7 @@ public class MyService extends Service {
             }
             sendNotification(globalSong);
         }
+
         return START_NOT_STICKY;
     }
 
@@ -61,6 +63,7 @@ public class MyService extends Service {
             mediaPlayer = null;
             mediaPlayer = MediaPlayer.create(this, song.getSongSource());
         }
+        StorageSingleton.putString(Constant.STORAGE_SONG_NAME, globalSong.getSongName());
         mediaPlayer.start();
         globalIsPlaying = true;
     }
@@ -140,7 +143,8 @@ public class MyService extends Service {
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
-            StorageSingleton.putSong(Constant.KEY_SONG, "N/A");
         }
+        StorageSingleton.putString(Constant.CURRENT_SONG_NAME, null);
+        StorageSingleton.putString(Constant.STORAGE_SONG_NAME, null);
     }
 }

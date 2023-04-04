@@ -18,20 +18,11 @@ public class StorageSingleton {
         return instance;
     }
 
-    public static void putSong(String key, String value) {
+    public static void putString(String key, String value) {
         StorageSingleton.getInstance().myStorage.putString(key, value);
     }
 
-    public static String getSong(String key) {
+    public static String getString(String key) {
        return StorageSingleton.getInstance().myStorage.getString(key);
     }
-//region
-//    public static void putBoolean(String key, boolean value) {
-//        StorageSingleton.getInstance().myStorage.putBoolean(key, value);
-//    }
-//
-//    public static boolean getBoolean(String key) {
-//        return StorageSingleton.getInstance().myStorage.getBoolean(key);
-//    }
-//    endregion
 }

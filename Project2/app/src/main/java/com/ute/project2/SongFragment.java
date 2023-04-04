@@ -37,12 +37,12 @@ public class SongFragment extends Fragment {
     ImageView ivPrevious;
     ImageView ivPlayPause;
     ImageView ivNext;
-    private String songName;
-
+    private boolean globalCheck;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         Bundle bundle = getArguments();
         context = getContext();
 
@@ -61,11 +61,18 @@ public class SongFragment extends Fragment {
             globalSong = (Song) bundle.get("song");
             isPlaying = bundle.getBoolean("isPlaying", false);
 
-            songName = StorageSingleton.getSong(Constant.KEY_SONG);
-            Toast.makeText(context, "Storage: " + songName + ", Card: " + globalSong.getSongName(), Toast.LENGTH_SHORT).show();
-            if (globalSong.getSongName().equals(songName)) {
+            String current = StorageSingleton.getString(Constant.CURRENT_SONG_NAME);
+            String storage = StorageSingleton.getString(Constant.STORAGE_SONG_NAME);
+            globalCheck = current.equals(storage);
+            Toast.makeText(context, "current: " + current + ", storage: " + storage, Toast.LENGTH_SHORT).show();
+            if (storage == null) {
+                globalCheck = true;
+            }
+            if (globalCheck && storage != null) {
                 isPlaying = true;
             }
+
+
             if (isPlaying) {
                 ivPlayPause.setImageResource(R.drawable.md_pause_circle);
             }
@@ -115,21 +122,15 @@ public class SongFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, MyService.class);
-            if (!songName.equals("N/A") && !songName.equals(tbTop.getSubtitle().toString())) {
-                context.stopService(intent);
-            }
-            if (!isPlaying) {
-                ivPlayPause.setImageResource(R.drawable.md_pause_circle);
-                intent.putExtra("song", globalSong);
-                putData(globalSong);
-                isPlaying = true;
-            } else {
-                ivPlayPause.setImageResource(R.drawable.md_play_circle);
-                isPlaying = false;
-            }
-            intent.putExtra("isPlaying", isPlaying);
-            context.startService(intent);
 
+            if (!globalCheck) {
+                context.stopService(intent);
+                globalCheck = true;
+                if(!isPlaying) {
+                    context.stopService(intent);
+                }
+            }
+            sendDataToService(intent);
         }
     };
 
@@ -142,18 +143,10 @@ public class SongFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         if (getActivity() != null) {
-            if (getActivity().isFinishing() && !isPlaying && songName.equals("N/A")) {
+            if (getActivity().isFinishing() && !isPlaying) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
                 eventOnDestroy();
             }
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        if (!isPlaying && songName.equals("N/A")) {
-            eventOnDestroy();
         }
     }
 
@@ -177,13 +170,17 @@ public class SongFragment extends Fragment {
         context.stopService(intent);
     }
 
-    private void putData(Song song) {
-        StorageSingleton.putSong(Constant.KEY_SONG, song.getSongName());
+    private void sendDataToService(Intent intent) {
+        if (!isPlaying) {
+            ivPlayPause.setImageResource(R.drawable.md_pause_circle);
+            intent.putExtra("song", globalSong);
+            isPlaying = true;
+
+        } else {
+            ivPlayPause.setImageResource(R.drawable.md_play_circle);
+            isPlaying = false;
+        }
+        intent.putExtra("isPlaying", isPlaying);
+        context.startService(intent);
     }
-//    region
-//    private void putData(Song song, boolean flag) {
-//        StorageSingleton.putSong(Constant.KEY_SONG, song);
-//        StorageSingleton.putBoolean(Constant.KEY_BOOLEAN, flag);
-//    }
-//    endregion
 }
