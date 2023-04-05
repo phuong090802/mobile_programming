@@ -27,10 +27,13 @@
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
         <item name="fontFamily">@font/montserrat_regular</item>
+
+        <item name="android:actionMenuTextColor">@color/md_theme_light_onBackground</item>
+        <item name="android:itemBackground">@color/md_theme_light_onPrimary</item>
     </style>
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation duration. -->
-        <item name="windowSplashScreenBackground">@color/splash_bg</item>
+        <item name="windowSplashScreenBackground">@color/seed</item>
 
         <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
              animated drawable. One of these is required. -->

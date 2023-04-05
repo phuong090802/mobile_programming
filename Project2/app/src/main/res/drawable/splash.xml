@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@color/splash_bg"/>
+        android:drawable="@color/seed"/>
     <item
         android:height="96dp"
         android:width="96dp"

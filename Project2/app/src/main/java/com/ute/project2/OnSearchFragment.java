@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
-import com.ute.project2.adapter.SongAdapter;
+import com.ute.project2.adapter.SongAdapterSearch;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.database.Database;
 import com.ute.project2.decoration.ItemDecoration;
@@ -42,7 +42,7 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
     boolean choose;
     MaterialButton btSong;
     MaterialButton btArtist;
-    SongAdapter songAdapter;
+    SongAdapterSearch songAdapterSearch;
     List<Song> songList;
 
     @Override
@@ -165,8 +165,8 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
     }
 
     private void setSongAdapter() {
-        songAdapter = new SongAdapter(getContext(), songList, this);
-        rcvSong.setAdapter(songAdapter);
+        songAdapterSearch = new SongAdapterSearch(getContext(), songList, this);
+        rcvSong.setAdapter(songAdapterSearch);
     }
 
     private final View.OnClickListener btSongOnClickListener = view -> {

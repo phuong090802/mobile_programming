@@ -1,11 +1,14 @@
 package com.ute.project2.adapter;
 
 import android.content.Context;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -17,12 +20,12 @@ import com.ute.project2.model.Song;
 
 import java.util.List;
 
-public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
+public class SongAdapterSearch extends RecyclerView.Adapter<SongAdapterSearch.ViewHolder> {
     List<Song> songList;
     Context context;
     SelectSongListener listener;
 
-    public SongAdapter(Context context, List<Song> songList, SelectSongListener listener) {
+    public SongAdapterSearch(Context context, List<Song> songList, SelectSongListener listener) {
         this.songList = songList;
         this.context = context;
         this.listener = listener;
@@ -30,13 +33,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     @NonNull
     @Override
-    public SongAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SongAdapterSearch.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.card_song_item, parent, false);
-        return new SongAdapter.ViewHolder(view);
+        return new SongAdapterSearch.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SongAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SongAdapterSearch.ViewHolder holder, int position) {
         Song song = songList.get(position);
         holder.ivSong.setImageResource(song.getSongImage());
         holder.tvSongName.setText(song.getSongName());
@@ -51,7 +54,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         return songList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         ImageView ivSong;
         TextView tvSongName;
         TextView tvArtistName;
@@ -63,6 +66,21 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             tvSongName = itemView.findViewById(R.id.tvSongName);
             tvArtistName = itemView.findViewById(R.id.tvArtistName);
             cvSongItem = itemView.findViewById(R.id.cvSongItem);
+            cvSongItem.setOnCreateContextMenuListener(this);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            MenuInflater inflater = new MenuInflater(view.getContext());
+            inflater.inflate(R.menu.menu_context_search, contextMenu);
+            contextMenu.findItem(R.id.mnAddToFavorites).setOnMenuItemClickListener(menuItem -> {
+                Toast.makeText(view.getContext(), "Add to favorites", Toast.LENGTH_SHORT).show();
+                return false;
+            });
+            contextMenu.findItem(R.id.mnAddToDownload).setOnMenuItemClickListener(menuItem -> {
+                Toast.makeText(view.getContext(), "Add to downloads", Toast.LENGTH_SHORT).show();
+                return false;
+            });
         }
     }
 }

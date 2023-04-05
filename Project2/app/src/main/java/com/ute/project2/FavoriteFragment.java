@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ute.project2.adapter.SongAdapter;
+import com.ute.project2.adapter.SongAdapterFavorite;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.database.Database;
 import com.ute.project2.decoration.ItemDecoration;
@@ -28,7 +28,7 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
     private OnViewClickListener onViewClickListener;
     TextView tvFavorite;
     RecyclerView recyclerView;
-    SongAdapter adapter;
+    SongAdapterFavorite adapter;
     List<Song> songList;
 
     @Override
@@ -62,7 +62,7 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
     private void setSongAdapter() {
         recyclerView.setVisibility(View.VISIBLE);
         tvFavorite.setVisibility(View.GONE);
-        adapter = new SongAdapter(getContext(), songList, this);
+        adapter = new SongAdapterFavorite(getContext(), songList, this);
         recyclerView.setAdapter(adapter);
     }
 

@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ute.project2.adapter.SongAdapter;
+import com.ute.project2.adapter.SongAdapterSearch;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.database.Database;
 import com.ute.project2.decoration.ItemDecoration;
@@ -68,7 +68,7 @@ public class GenreFragment extends Fragment implements SelectSongListener {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new ItemDecoration(22));
 
-        SongAdapter adapter = new SongAdapter(getContext(), songList, this);
+        SongAdapterSearch adapter = new SongAdapterSearch(getContext(), songList, this);
         recyclerView.setAdapter(adapter);
         return view;
     }

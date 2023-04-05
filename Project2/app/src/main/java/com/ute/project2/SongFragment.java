@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -31,6 +32,9 @@ public class SongFragment extends Fragment {
     ImageView ivNext;
     private boolean globalCheck;
 
+    ImageView ivDownload;
+    ImageView ivFavorite;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,6 +43,13 @@ public class SongFragment extends Fragment {
         context = getContext();
 
         View view = inflater.inflate(R.layout.fragment_song, container, false);
+
+        ivDownload = view.findViewById(R.id.ivDownload);
+        ivDownload.setOnClickListener(ivDownloadOnClickListener);
+
+        ivFavorite = view.findViewById(R.id.ivFavorite);
+        ivFavorite.setOnClickListener(ivFavoriteOnClickListener);
+
 
         ivPrevious = view.findViewById(R.id.ivPrevious);
         ivPrevious.setOnClickListener(ivPreviousOnClickListener);
@@ -80,7 +91,6 @@ public class SongFragment extends Fragment {
         ivSongImage.setImageResource(globalSong.getSongImage());
 
 
-
         return view;
     }
 
@@ -114,7 +124,7 @@ public class SongFragment extends Fragment {
             if (!globalCheck) {
                 context.stopService(intent);
                 globalCheck = true;
-                if(!isPlaying) {
+                if (!isPlaying) {
                     context.stopService(intent);
                 }
             }
@@ -125,6 +135,10 @@ public class SongFragment extends Fragment {
     private final View.OnClickListener ivNextOnClickListener = view -> changeSong();
 
     private final View.OnClickListener ivPreviousOnClickListener = view -> changeSong();
+
+    private final View.OnClickListener ivDownloadOnClickListener = view -> Toast.makeText(context, "Download " + "\"" + globalSong.getSongName() + "\"", Toast.LENGTH_SHORT).show();
+
+    private final View.OnClickListener ivFavoriteOnClickListener = view -> Toast.makeText(context, "Add " + "\"" + globalSong.getSongName() + "\"" + " to favorites", Toast.LENGTH_SHORT).show();
 
 
     @Override

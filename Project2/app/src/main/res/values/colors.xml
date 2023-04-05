@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash_bg">#7a4ccf</color>
+    <color name="seed">#7a4ccf</color>
     <color name="md_theme_light_primary">#7041C4</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#EBDDFF</color>

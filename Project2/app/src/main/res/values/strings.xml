@@ -24,4 +24,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="downloads">Downloads</string>
     <string name="songs_you_favorites_will_appear_here">Songs you favorites will appear here</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="add_to_downloads">Add to downloads</string>
+    <string name="remove_favorite">Remove Favorite</string>
+    <string name="remove">Remove</string>
 </resources>

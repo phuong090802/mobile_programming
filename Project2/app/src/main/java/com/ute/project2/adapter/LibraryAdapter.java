@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,7 +42,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
         holder.textView.setCompoundDrawablePadding(16);
         holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(ContextCompat.getDrawable(context, itemLibrary.getImage()), null, null, null);
         if(itemLibraryListener != null) {
-            holder.textView.setOnClickListener(view -> itemLibraryListener.onItemLibraryOnClick(itemLibrary));
+            holder.cardView.setOnClickListener(view -> itemLibraryListener.onItemLibraryOnClick(itemLibrary));
         }
     }
 
@@ -52,10 +53,12 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
+        CardView cardView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.text_view_lb);
+            cardView = itemView.findViewById(R.id.card_view_library);
         }
     }
 }
