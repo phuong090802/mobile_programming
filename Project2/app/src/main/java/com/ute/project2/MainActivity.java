@@ -22,7 +22,7 @@ import com.ute.project2.constant.Constant;
 import com.ute.project2.event.ItemLibraryListener;
 import com.ute.project2.event.OnViewClickListener;
 import com.ute.project2.model.Genre;
-import com.ute.project2.model.ItemLibrary;
+import com.ute.project2.item.ItemLibrary;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 

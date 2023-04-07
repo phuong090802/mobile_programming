@@ -3,11 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:padding="8dp"
     android:layout_height="match_parent"
+    android:padding="8dp"
     tools:context=".SongFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
+        app:layout_constraintBottom_toTopOf="@id/ivSongImage"
         android:id="@+id/tbTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,13 +29,13 @@
         app:layout_constraintTop_toBottomOf="@id/tbTop" />
 
     <ImageView
-        app:layout_constraintBottom_toTopOf="@id/flow_bottom"
         android:id="@+id/ivSongImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
         android:scaleType="matrix"
         android:src="@drawable/song"
+        app:layout_constraintBottom_toTopOf="@id/flow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,17 +43,47 @@
 
 
     <androidx.constraintlayout.helper.widget.Flow
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/flow_bottom"
-        android:layout_width="match_parent"
+        android:id="@+id/flow"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         android:orientation="horizontal"
-        app:constraint_referenced_ids="ivFavorite,ivPrevious,ivPlayPause,ivNext,ivDownload"
-        app:flow_horizontalGap="20dp"
+        app:constraint_referenced_ids="text_view_current,seek_bar,text_view_duration"
+        app:flow_horizontalGap="8dp"
+        app:layout_constraintBottom_toTopOf="@id/flow_bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivSongImage" />
+
+    <TextView
+        android:id="@+id/text_view_current"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_0_00" />
+
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/search" />
+
+    <TextView
+        android:id="@+id/text_view_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_0_00" />
+
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/flow_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:constraint_referenced_ids="ivFavorite,ivPrevious,ivPlayPause,ivNext,ivDownload"
+        app:flow_horizontalGap="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/flow" />
 
     <ImageView
         android:id="@+id/ivFavorite"

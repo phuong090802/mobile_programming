@@ -1,7 +1,7 @@
 package com.ute.project2.event;
 
 import com.ute.project2.model.Genre;
-import com.ute.project2.model.ItemLibrary;
+import com.ute.project2.item.ItemLibrary;
 import com.ute.project2.model.Song;
 
 public interface OnViewClickListener {

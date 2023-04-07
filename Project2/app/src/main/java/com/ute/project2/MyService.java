@@ -3,8 +3,10 @@ package com.ute.project2;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -20,11 +22,15 @@ import com.ute.project2.database.Database;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MyService extends Service {
     private boolean globalIsPlaying;
     private MediaPlayer mediaPlayer;
     private Song globalSong;
     private boolean renew;
+    private Timer timer;
 
     @Nullable
     @Override
@@ -38,6 +44,7 @@ public class MyService extends Service {
         globalIsPlaying = intent.getBooleanExtra("isPlaying", false);
         renew = intent.getBooleanExtra("renew", false);
         if (song != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter(Constant.ACTION_MEDIA_PLAYER_UPDATE));
             globalSong = song;
             createMediaPlayer(globalSong);
             sendNotification(globalSong);
@@ -55,6 +62,16 @@ public class MyService extends Service {
         return START_NOT_STICKY;
     }
 
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(mediaPlayer != null) {
+                int currentPosition = intent.getIntExtra("seekbarValue", 0);
+                mediaPlayer.seekTo(currentPosition);
+            }
+        }
+    };
+
     private void createMediaPlayer(Song song) {
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(this, Uri.parse(song.getSongSource()));
@@ -65,6 +82,22 @@ public class MyService extends Service {
             mediaPlayer = MediaPlayer.create(this, Uri.parse(song.getSongSource()));
         }
         StorageSingleton.putString(Constant.STORAGE_SONG_NAME, globalSong.getSongName());
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null) {
+                    int currentPosition = mediaPlayer.getCurrentPosition();
+                    if (currentPosition == mediaPlayer.getDuration()) {
+                        timer.cancel();
+                    } else {
+                        Intent intent = new Intent(Constant.ACTION_SEEKBAR_UPDATE);
+                        intent.putExtra("currentPosition", currentPosition);
+                        LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);
+                    }
+                }
+            }
+        }, 0, 1000);
         mediaPlayer.start();
         globalIsPlaying = true;
     }
@@ -145,7 +178,9 @@ public class MyService extends Service {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        timer.cancel();
         StorageSingleton.putString(Constant.CURRENT_SONG_NAME, null);
         StorageSingleton.putString(Constant.STORAGE_SONG_NAME, null);
     }
+
 }

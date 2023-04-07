@@ -15,7 +15,7 @@ import com.ute.project2.adapter.LibraryAdapter;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.decoration.ItemDecoration;
 import com.ute.project2.event.ItemLibraryListener;
-import com.ute.project2.model.ItemLibrary;
+import com.ute.project2.item.ItemLibrary;
 
 public class YourLibraryFragment extends Fragment implements ItemLibraryListener {
     private ItemLibraryListener itemLibraryListener;

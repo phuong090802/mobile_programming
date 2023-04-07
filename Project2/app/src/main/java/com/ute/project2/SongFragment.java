@@ -4,11 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +24,8 @@ import com.ute.project2.constant.Constant;
 import com.ute.project2.database.Database;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
+import com.ute.project2.util.MyUtilities;
+
 
 public class SongFragment extends Fragment {
     Song globalSong;
@@ -31,9 +37,13 @@ public class SongFragment extends Fragment {
     ImageView ivPlayPause;
     ImageView ivNext;
     private boolean globalCheck;
-
     ImageView ivDownload;
     ImageView ivFavorite;
+    TextView tvDuration;
+    TextView tvCurrent;
+    SeekBar seekBar;
+    int duration;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -41,8 +51,12 @@ public class SongFragment extends Fragment {
 
         Bundle bundle = getArguments();
         context = getContext();
-
         View view = inflater.inflate(R.layout.fragment_song, container, false);
+
+        tvDuration = view.findViewById(R.id.text_view_duration);
+        tvCurrent = view.findViewById(R.id.text_view_current);
+
+        seekBar = view.findViewById(R.id.seek_bar);
 
         ivDownload = view.findViewById(R.id.ivDownload);
         ivDownload.setOnClickListener(ivDownloadOnClickListener);
@@ -60,13 +74,18 @@ public class SongFragment extends Fragment {
         ivNext = view.findViewById(R.id.ivNext);
         ivNext.setOnClickListener(ivNextOnClickListener);
 
+
         if (bundle != null) {
             globalSong = (Song) bundle.get("song");
             isPlaying = bundle.getBoolean("isPlaying", false);
-
             String current = StorageSingleton.getString(Constant.CURRENT_SONG_NAME);
             String storage = StorageSingleton.getString(Constant.STORAGE_SONG_NAME);
             globalCheck = current.equals(storage);
+            if (globalSong != null) {
+                duration = MediaPlayer.create(context, Uri.parse(globalSong.getSongSource())).getDuration();
+                tvDuration.setText(globalSong.getDuration());
+                seekBar.setMax(duration);
+            }
             if (storage == null) {
                 globalCheck = true;
             }
@@ -74,13 +93,13 @@ public class SongFragment extends Fragment {
                 isPlaying = true;
             }
 
-
             if (isPlaying) {
                 ivPlayPause.setImageResource(R.drawable.md_pause_circle);
             }
         }
         if (context != null) {
             LocalBroadcastManager.getInstance(context).registerReceiver(receiver, new IntentFilter(Constant.ACTION));
+            LocalBroadcastManager.getInstance(context).registerReceiver(mReceiver, new IntentFilter(Constant.ACTION_SEEKBAR_UPDATE));
         }
 
         tbTop = view.findViewById(R.id.tbTop);
@@ -89,10 +108,31 @@ public class SongFragment extends Fragment {
 
         ivSongImage = view.findViewById(R.id.ivSongImage);
         ivSongImage.setImageResource(globalSong.getSongImage());
-
-
         return view;
     }
+
+    private final SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            if(i == seekBar.getMax()) {
+                ivPlayPause.setImageResource(R.drawable.md_replay);
+                isPlaying = false;
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            Intent intent = new Intent(Constant.ACTION_MEDIA_PLAYER_UPDATE);
+            intent.putExtra("seekbarValue", seekBar.getProgress());
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        }
+    };
+
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -111,6 +151,17 @@ public class SongFragment extends Fragment {
             } else {
                 ivPlayPause.setImageResource(R.drawable.md_pause_circle);
                 isPlaying = true;
+            }
+        }
+    };
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (globalCheck) {
+                int currentPosition = intent.getIntExtra("currentPosition", 0);
+                seekBar.setProgress(currentPosition);
+                tvCurrent.setText(MyUtilities.formatTime(currentPosition));
             }
         }
     };
@@ -177,7 +228,7 @@ public class SongFragment extends Fragment {
             ivPlayPause.setImageResource(R.drawable.md_pause_circle);
             intent.putExtra("song", globalSong);
             isPlaying = true;
-
+            seekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         } else {
             ivPlayPause.setImageResource(R.drawable.md_play_circle);
             isPlaying = false;
@@ -185,4 +236,6 @@ public class SongFragment extends Fragment {
         intent.putExtra("isPlaying", isPlaying);
         context.startService(intent);
     }
+
+
 }

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ute.project2.R;
 import com.ute.project2.event.ItemLibraryListener;
-import com.ute.project2.model.ItemLibrary;
+import com.ute.project2.item.ItemLibrary;
 
 import java.util.List;
 

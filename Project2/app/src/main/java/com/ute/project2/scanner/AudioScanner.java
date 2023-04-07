@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import com.ute.project2.R;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.model.Song;
+import com.ute.project2.util.MyUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +21,8 @@ public class AudioScanner {
         String[] projection = {
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.ARTIST
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.DURATION
         };
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -36,6 +38,7 @@ public class AudioScanner {
                 String songName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
                 String songSource = "file://" + cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
                 String artistsName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                int duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
                 String genreName = "";
                 MediaScannerConnection.scanFile(context, new String[]{songSource}, null, null);
                 Cursor genreCursor = context.getContentResolver().query(MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI, new String[]{MediaStore.Audio.Genres.NAME}, null, null, null);
@@ -43,7 +46,7 @@ public class AudioScanner {
                     genreName = genreCursor.getString(genreCursor.getColumnIndexOrThrow(MediaStore.Audio.Genres.NAME));
                     genreCursor.close();
                 }
-                songs.add(new Song(songName, R.drawable.song, songSource, genreName, artistsName));
+                songs.add(new Song(songName, R.drawable.song, songSource, genreName, artistsName, MyUtilities.formatTime(duration)));
                 cursor.moveToNext();
             }
             cursor.close();

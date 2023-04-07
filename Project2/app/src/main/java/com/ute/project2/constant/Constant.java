@@ -1,7 +1,7 @@
 package com.ute.project2.constant;
 
 import com.ute.project2.R;
-import com.ute.project2.model.ItemLibrary;
+import com.ute.project2.item.ItemLibrary;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,4 +18,6 @@ public class Constant {
             new ItemLibrary(R.drawable.md_download, R.string.download)));
     public static final String EXTENSION = ".mp3";
     public static final int REQUEST_CODE_READ_AND_WRITE = 10;
+    public static final String ACTION_SEEKBAR_UPDATE = "actionSeekbarUpdate";
+    public static final String ACTION_MEDIA_PLAYER_UPDATE = "actionMediaPlayerUpdate";
 }

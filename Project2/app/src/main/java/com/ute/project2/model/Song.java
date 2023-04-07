@@ -8,13 +8,15 @@ public class Song implements Serializable {
     private final String songSource;
     private final String genreName;
     private final String artistsName;
+    private final String duration;
 
-    public Song(String songName, int songImage, String songSource, String genreName, String artistsName) {
+    public Song(String songName, int songImage, String songSource, String genreName, String artistsName, String duration) {
         this.songName = songName;
         this.songImage = songImage;
         this.songSource = songSource;
         this.genreName = genreName;
         this.artistsName = artistsName;
+        this.duration = duration;
     }
 
     public String getSongName() {
@@ -37,4 +39,7 @@ public class Song implements Serializable {
         return artistsName;
     }
 
+    public String getDuration() {
+        return duration;
+    }
 }

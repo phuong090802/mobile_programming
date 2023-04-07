@@ -1,4 +1,4 @@
-package com.ute.project2.model;
+package com.ute.project2.item;
 
 
 public class ItemLibrary {
