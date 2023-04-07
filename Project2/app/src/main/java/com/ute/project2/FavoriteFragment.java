@@ -30,6 +30,7 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
     RecyclerView recyclerView;
     SongAdapterFavorite adapter;
     List<Song> songList;
+    Context context;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -42,6 +43,7 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        context = getContext();
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
         tvFavorite = view.findViewById(R.id.text_view_favorite);
         recyclerView = view.findViewById(R.id.recycler_view_favorite);
@@ -49,7 +51,7 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new ItemDecoration(22));
-        songList = Database.getSongListFavorite();
+        songList = Database.getSongListFavorite(context);
         if (songList.isEmpty()) {
             tvFavorite.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);

@@ -35,6 +35,7 @@ public class GenreFragment extends Fragment implements SelectSongListener {
     RecyclerView recyclerView;
     List<Song> songList;
     Genre genre;
+    Context context;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -48,10 +49,11 @@ public class GenreFragment extends Fragment implements SelectSongListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        context = getContext();
         Bundle bundle = getArguments();
         if (bundle != null) {
             genre = (Genre) bundle.get("genre");
-            songList = Database.getSongList().stream().filter(song -> song.getGenreName().contains(genre.getGenreName())).collect(Collectors.toList());
+            songList = Database.getSongList(context).stream().filter(song -> song.getGenreName().contains(genre.getGenreName())).collect(Collectors.toList());
         }
         View view = inflater.inflate(R.layout.fragment_genre, container, false);
 

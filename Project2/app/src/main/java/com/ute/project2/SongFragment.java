@@ -156,7 +156,7 @@ public class SongFragment extends Fragment {
         Intent intent = new Intent(context, MyService.class);
         context.stopService(intent);
 
-        globalSong = Database.getRandomElement();
+        globalSong = Database.getRandomElement(context);
 
         tbTop.setTitle(globalSong.getSongName());
         tbTop.setSubtitle(globalSong.getArtistsName());

@@ -1,8 +1,16 @@
 package com.ute.project2;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -33,6 +41,14 @@ public class MainActivity extends AppCompatActivity implements OnViewClickListen
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setOnItemSelectedListener(onItemSelectedListener);
 
+        if(!checkPermission()) {
+            requestPermission();
+        } else{
+            initialView();
+        }
+    }
+
+    private void initialView() {
         if (getIntent() != null && getIntent().hasExtra("song") && getIntent().hasExtra("isPlaying")) {
             Song song = (Song) getIntent().getSerializableExtra("song");
             boolean isPlaying = getIntent().getBooleanExtra("isPlaying", false);
@@ -50,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements OnViewClickListen
             replaceFragment(new SearchFragment());
         }
     }
-
 
     private final NavigationBarView.OnItemSelectedListener onItemSelectedListener = item -> {
         int itemId = item.getItemId();
@@ -125,4 +140,27 @@ public class MainActivity extends AppCompatActivity implements OnViewClickListen
         }
     }
 
+    private boolean checkPermission() {
+        int checkReadExternal = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        int checkWriteExternal = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return checkReadExternal == PackageManager.PERMISSION_GRANTED && checkWriteExternal == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, Constant.REQUEST_CODE_READ_AND_WRITE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Constant.REQUEST_CODE_READ_AND_WRITE) {
+            if (grantResults.length > 0) {
+                boolean reader = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                boolean writer = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                if (reader && writer) {
+                    initialView();
+                }
+            }
+        }
+    }
 }

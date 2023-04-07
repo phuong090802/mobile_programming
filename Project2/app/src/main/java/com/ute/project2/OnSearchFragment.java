@@ -44,6 +44,7 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
     MaterialButton btArtist;
     SongAdapterSearch songAdapterSearch;
     List<Song> songList;
+    Context context;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -56,7 +57,7 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        context = getContext();
         View view = inflater.inflate(R.layout.fragment_on_search, container, false);
 
         choose = true;
@@ -118,9 +119,9 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
                 tvPlayWhatYouLove.setVisibility(View.GONE);
                 tvSearchFor.setVisibility(View.GONE);
                 if (choose) {
-                    songList = Database.getSongList().stream().filter(song -> song.getSongName().contains(newText)).collect(Collectors.toList());
+                    songList = Database.getSongList(context).stream().filter(song -> song.getSongName().contains(newText)).collect(Collectors.toList());
                 } else {
-                    songList = Database.getSongList().stream().filter(song -> song.getArtistsName().contains(newText)).collect(Collectors.toList());
+                    songList = Database.getSongList(context).stream().filter(song -> song.getArtistsName().contains(newText)).collect(Collectors.toList());
                 }
                 if (songList.isEmpty()) {
                     tvPlayWhatYouLove.setVisibility(View.VISIBLE);
@@ -157,9 +158,9 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
         }
         String query = svSearch.getQuery().toString();
         if (flag) {
-            songList = Database.getSongList().stream().filter(song -> song.getSongName().contains(query)).collect(Collectors.toList());
+            songList = Database.getSongList(context).stream().filter(song -> song.getSongName().contains(query)).collect(Collectors.toList());
         } else {
-            songList = Database.getSongList().stream().filter(song -> song.getArtistsName().contains(query)).collect(Collectors.toList());
+            songList = Database.getSongList(context).stream().filter(song -> song.getArtistsName().contains(query)).collect(Collectors.toList());
         }
         setSongAdapter();
     }

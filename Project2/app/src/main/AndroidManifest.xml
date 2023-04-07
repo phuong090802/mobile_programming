@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
@@ -26,8 +31,9 @@
             </intent-filter>
         </activity>
         <service android:name=".MyService" />
-        <receiver android:name=".MyReceiver"/>
-        <receiver android:name=".ChangeSongReceiver"/>
+
+        <receiver android:name=".MyReceiver" />
+        <receiver android:name=".ChangeSongReceiver" />
     </application>
 
 

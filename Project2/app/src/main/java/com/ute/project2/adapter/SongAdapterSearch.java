@@ -71,14 +71,28 @@ public class SongAdapterSearch extends RecyclerView.Adapter<SongAdapterSearch.Vi
 
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            RecyclerView recyclerView = (RecyclerView) view.getParent();
+            SongAdapterSearch adapterSearch = (SongAdapterSearch) recyclerView.getAdapter();
+            int position = recyclerView.getChildAdapterPosition(view);
+            Song song = null;
+            if (adapterSearch != null) {
+                song = adapterSearch.songList.get(position);
+            }
             MenuInflater inflater = new MenuInflater(view.getContext());
             inflater.inflate(R.menu.menu_context_search, contextMenu);
+            Song finalSong = song;
             contextMenu.findItem(R.id.mnAddToFavorites).setOnMenuItemClickListener(menuItem -> {
-                Toast.makeText(view.getContext(), "Add to favorites", Toast.LENGTH_SHORT).show();
+                if (finalSong != null) {
+                    Toast.makeText(view.getContext(), "Add " + "\"" + finalSong.getSongName() + "\"" + " to favorites", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
                 return false;
             });
             contextMenu.findItem(R.id.mnAddToDownload).setOnMenuItemClickListener(menuItem -> {
-                Toast.makeText(view.getContext(), "Add to downloads", Toast.LENGTH_SHORT).show();
+                if (finalSong != null) {
+                    Toast.makeText(view.getContext(), "Download " + "\"" + finalSong.getSongName() + "\"", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
                 return false;
             });
         }

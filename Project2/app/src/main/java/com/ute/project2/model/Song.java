@@ -5,11 +5,11 @@ import java.io.Serializable;
 public class Song implements Serializable {
     private final String songName;
     private final int songImage;
-    private final int songSource;
+    private final String songSource;
     private final String genreName;
     private final String artistsName;
 
-    public Song(String songName, int songImage, int songSource, String genreName, String artistsName) {
+    public Song(String songName, int songImage, String songSource, String genreName, String artistsName) {
         this.songName = songName;
         this.songImage = songImage;
         this.songSource = songSource;
@@ -25,7 +25,7 @@ public class Song implements Serializable {
         return songImage;
     }
 
-    public int getSongSource() {
+    public String getSongSource() {
         return songSource;
     }
 

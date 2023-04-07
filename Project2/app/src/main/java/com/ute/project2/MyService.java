@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.IBinder;
 import android.widget.RemoteViews;
 
@@ -56,12 +57,12 @@ public class MyService extends Service {
 
     private void createMediaPlayer(Song song) {
         if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(this, song.getSongSource());
+            mediaPlayer = MediaPlayer.create(this, Uri.parse(song.getSongSource()));
         } else if (renew) {
             sendDataToFragment(song);
             mediaPlayer.release();
             mediaPlayer = null;
-            mediaPlayer = MediaPlayer.create(this, song.getSongSource());
+            mediaPlayer = MediaPlayer.create(this, Uri.parse(song.getSongSource()));
         }
         StorageSingleton.putString(Constant.STORAGE_SONG_NAME, globalSong.getSongName());
         mediaPlayer.start();
@@ -124,7 +125,7 @@ public class MyService extends Service {
     }
 
     private PendingIntent sendDataToReceiver(Context context) {
-        Song song = Database.getRandomElement();
+        Song song = Database.getRandomElement(this);
         Intent intent = new Intent(context, ChangeSongReceiver.class);
         intent.putExtra("song", song);
         intent.putExtra("isPlaying", globalIsPlaying);
