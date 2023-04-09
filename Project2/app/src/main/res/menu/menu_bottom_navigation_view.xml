@@ -6,6 +6,6 @@
         android:title="@string/search" />
     <item
         android:id="@+id/mnYourLibrary"
-        android:icon="@drawable/md_outline_library_music"
+        android:icon="@drawable/md_library_music"
         android:title="@string/your_library" />
 </menu>

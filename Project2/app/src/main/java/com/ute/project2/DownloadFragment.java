@@ -25,11 +25,11 @@ import java.util.List;
 
 public class DownloadFragment extends Fragment implements SelectSongListener {
     private OnViewClickListener onViewClickListener;
-    TextView tvDownload;
-    RecyclerView recyclerView;
+    private TextView tvDownload;
+    private RecyclerView recyclerView;
     SongAdapterDownload adapter;
-    List<Song> songList;
-    Context context;
+    private List<Song> songList;
+    private Context context;
 
     @Override
     public void onAttach(@NonNull Context context) {

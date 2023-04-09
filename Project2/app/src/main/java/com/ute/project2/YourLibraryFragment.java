@@ -37,7 +37,6 @@ public class YourLibraryFragment extends Fragment implements ItemLibraryListener
         recyclerView = view.findViewById(R.id.recycler_view_library);
         adapter = new LibraryAdapter(getContext(), itemLibraryListener, Constant.ITEM_LIBRARY_LIST);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new ItemDecoration(22));
         recyclerView.setAdapter(adapter);

@@ -20,35 +20,54 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 import com.ute.project2.constant.Constant;
-import com.ute.project2.database.Database;
+import com.ute.project2.model.Artist;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 import com.ute.project2.util.MyUtilities;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class SongFragment extends Fragment {
-    Song globalSong;
-    MaterialToolbar tbTop;
-    ImageView ivSongImage;
-    boolean isPlaying;
-    Context context;
+    private Song globalSong;
+    private MaterialToolbar tbTop;
+    private ImageView ivSongImage;
+    private boolean isPlaying;
+    private Context context;
     ImageView ivPrevious;
-    ImageView ivPlayPause;
+    private ImageView ivPlayPause;
     ImageView ivNext;
     private boolean globalCheck;
     ImageView ivDownload;
     ImageView ivFavorite;
     TextView tvDuration;
     TextView tvCurrent;
-    SeekBar seekBar;
+    private SeekBar seekBar;
     int duration;
-
+    DatabaseReference artistDatabaseReference;
+    DatabaseReference songDatabaseReference;
+    private List<Song> songList;
+    private List<Artist> artistList;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        songList = new ArrayList<>();
+        artistList = new ArrayList<>();
+        artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
+        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
+        songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
+        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
         Bundle bundle = getArguments();
         context = getContext();
         View view = inflater.inflate(R.layout.fragment_song, container, false);
@@ -94,7 +113,7 @@ public class SongFragment extends Fragment {
             }
 
             if (isPlaying) {
-                ivPlayPause.setImageResource(R.drawable.md_pause_circle);
+                ivPlayPause.setImageResource(R.drawable.md_pause);
             }
         }
         if (context != null) {
@@ -104,17 +123,64 @@ public class SongFragment extends Fragment {
 
         tbTop = view.findViewById(R.id.tbTop);
         tbTop.setTitle(globalSong.getSongName());
-        tbTop.setSubtitle(globalSong.getArtistsName());
+        tbTop.setSubtitle(globalSong.getArtist());
 
         ivSongImage = view.findViewById(R.id.ivSongImage);
-        ivSongImage.setImageResource(globalSong.getSongImage());
+        File cacheDir = context.getCacheDir();
+        new File(cacheDir, "song-image-picasso-cache");
+        Picasso.get().load(globalSong.getSongImage()).into(ivSongImage);
         return view;
     }
+
+    private final ValueEventListener songValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                String genreId = dataSnapshot.child(Constant.CHILD_SONG_GENRE_ID).getValue(String.class);
+                String songId = dataSnapshot.getKey();
+                String songName = dataSnapshot.child(Constant.CHILD_SONG_NAME).getValue(String.class);
+                String songImage = dataSnapshot.child(Constant.CHILD_SONG_IMAGE).getValue(String.class);
+                String songSource = dataSnapshot.child(Constant.CHILD_SONG_SOURCE).getValue(String.class);
+                String artistsId = dataSnapshot.child(Constant.CHILD_SONG_ARTIST_ID).getValue(String.class);
+                String duration = dataSnapshot.child(Constant.CHILD_DURATION).getValue(String.class);
+                Song song = new Song(songId, songName, songImage, songSource, genreId, artistsId, duration);
+                for (Artist artist : artistList) {
+                    if (artist.getArtistId().equals(artistsId)) {
+                        song.setArtist(artist.getArtistName());
+                    }
+                }
+                songList.add(song);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+
+        }
+    };
+
+    private final ValueEventListener artistValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                String artistId = dataSnapshot.getKey();
+                String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                Artist artist = new Artist(artistId, artistName, artistImage);
+                artistList.add(artist);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+
+        }
+    };
 
     private final SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            if(i == seekBar.getMax()) {
+            if (i == seekBar.getMax()) {
                 ivPlayPause.setImageResource(R.drawable.md_replay);
                 isPlaying = false;
             }
@@ -142,14 +208,16 @@ public class SongFragment extends Fragment {
             if (!globalSong.equals(song)) {
                 globalSong = song;
                 tbTop.setTitle(globalSong.getSongName());
-                tbTop.setSubtitle(globalSong.getArtistsName());
-                ivSongImage.setImageResource(globalSong.getSongImage());
+                tbTop.setSubtitle(globalSong.getArtist());
+                File cacheDir = context.getCacheDir();
+                new File(cacheDir, "song-image-picasso-cache");
+                Picasso.get().load(globalSong.getSongImage()).into(ivSongImage);
             }
             if (isPlaying) {
-                ivPlayPause.setImageResource(R.drawable.md_play_circle);
+                ivPlayPause.setImageResource(R.drawable.md_play);
                 isPlaying = false;
             } else {
-                ivPlayPause.setImageResource(R.drawable.md_pause_circle);
+                ivPlayPause.setImageResource(R.drawable.md_pause);
                 isPlaying = true;
             }
         }
@@ -183,9 +251,15 @@ public class SongFragment extends Fragment {
         }
     };
 
-    private final View.OnClickListener ivNextOnClickListener = view -> changeSong();
+    private final View.OnClickListener ivNextOnClickListener = view -> {
+        Song song = nextSong();
+        changeSong(song);
+    };
 
-    private final View.OnClickListener ivPreviousOnClickListener = view -> changeSong();
+    private final View.OnClickListener ivPreviousOnClickListener = view -> {
+        Song song = previousSong();
+        changeSong(song);
+    };
 
     private final View.OnClickListener ivDownloadOnClickListener = view -> Toast.makeText(context, "Download " + "\"" + globalSong.getSongName() + "\"", Toast.LENGTH_SHORT).show();
 
@@ -203,19 +277,51 @@ public class SongFragment extends Fragment {
         }
     }
 
-    private void changeSong() {
+    private void changeSong(Song song) {
         Intent intent = new Intent(context, MyService.class);
         context.stopService(intent);
-
-        globalSong = Database.getRandomElement(context);
-
+        globalSong = song;
         tbTop.setTitle(globalSong.getSongName());
-        tbTop.setSubtitle(globalSong.getArtistsName());
-        ivSongImage.setImageResource(globalSong.getSongImage());
+        tbTop.setSubtitle(globalSong.getArtist());
+        File cacheDir = context.getCacheDir();
+        new File(cacheDir, "song-image-picasso-cache");
+        Picasso.get().load(globalSong.getSongImage()).into(ivSongImage);
 
         intent.putExtra("song", globalSong);
         intent.putExtra("isPlaying", isPlaying);
         context.startService(intent);
+    }
+
+    private Song nextSong() {
+        int index = 0;
+        for (Song song : songList) {
+            if (song.getSongId().equals(globalSong.getSongId())) {
+                break;
+            }
+            index++;
+        }
+        if (index + 1 < songList.size()) {
+            index += 1;
+        } else {
+            index = 0;
+        }
+        return songList.get(index);
+    }
+
+    private Song previousSong() {
+        int index = 0;
+        for (Song song : songList) {
+            if (song.getSongId().equals(globalSong.getSongId())) {
+                break;
+            }
+            index++;
+        }
+        if (index - 1 > 0) {
+            index -= 1;
+        } else {
+            index = songList.size() - 1;
+        }
+        return songList.get(index);
     }
 
     private void eventOnDestroy() {
@@ -225,14 +331,17 @@ public class SongFragment extends Fragment {
 
     private void sendDataToService(Intent intent) {
         if (!isPlaying) {
-            ivPlayPause.setImageResource(R.drawable.md_pause_circle);
+            ivPlayPause.setImageResource(R.drawable.md_pause);
             intent.putExtra("song", globalSong);
             isPlaying = true;
             seekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         } else {
-            ivPlayPause.setImageResource(R.drawable.md_play_circle);
+            ivPlayPause.setImageResource(R.drawable.md_play);
             isPlaying = false;
         }
+        Gson gson = new Gson();
+        String json = gson.toJson(songList);
+        intent.putExtra("json", json);
         intent.putExtra("isPlaying", isPlaying);
         context.startService(intent);
     }

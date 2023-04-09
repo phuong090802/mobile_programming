@@ -18,9 +18,9 @@ import com.ute.project2.item.ItemLibrary;
 import java.util.List;
 
 public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHolder> {
-    ItemLibraryListener itemLibraryListener;
-    Context context;
-    List<ItemLibrary> itemLibraries;
+    private final ItemLibraryListener itemLibraryListener;
+    private final Context context;
+    private final List<ItemLibrary> itemLibraries;
 
     public LibraryAdapter(Context context, ItemLibraryListener itemLibraryListener, List<ItemLibrary> itemLibraries) {
         this.itemLibraryListener = itemLibraryListener;
@@ -52,12 +52,12 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
-        CardView cardView;
+        private final TextView textView;
+        private final CardView cardView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.text_view_lb);
+            textView = itemView.findViewById(R.id.text_view_library);
             cardView = itemView.findViewById(R.id.card_view_library);
         }
     }

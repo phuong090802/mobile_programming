@@ -21,8 +21,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.event.ItemLibraryListener;
 import com.ute.project2.event.OnViewClickListener;
-import com.ute.project2.model.Genre;
 import com.ute.project2.item.ItemLibrary;
+import com.ute.project2.model.Genre;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 
@@ -30,7 +30,7 @@ import java.util.Stack;
 
 
 public class MainActivity extends AppCompatActivity implements OnViewClickListener, ItemLibraryListener {
-    BottomNavigationView bottomNavigationView;
+    private BottomNavigationView bottomNavigationView;
     private final Stack<Fragment> fragmentStack = new Stack<>();
 
     @Override
@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity implements OnViewClickListen
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setOnItemSelectedListener(onItemSelectedListener);
 
-        if(!checkPermission()) {
+        if (!checkPermission()) {
             requestPermission();
-        } else{
+        } else {
             initialView();
         }
     }

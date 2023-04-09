@@ -19,32 +19,42 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
-import com.ute.project2.adapter.SongAdapterSearch;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.ute.project2.adapter.SongAdapter;
 import com.ute.project2.constant.Constant;
-import com.ute.project2.database.Database;
 import com.ute.project2.decoration.ItemDecoration;
 import com.ute.project2.event.OnViewClickListener;
 import com.ute.project2.event.SelectSongListener;
+import com.ute.project2.model.Artist;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class OnSearchFragment extends Fragment implements SelectSongListener {
     private OnViewClickListener onViewClickListener;
-    ImageView ivBack;
-    SearchView svSearch;
-    RecyclerView rcvSong;
-    TextView tvPlayWhatYouLove;
-    TextView tvSearchFor;
-    NestedScrollView nsvChoose;
-    boolean choose;
-    MaterialButton btSong;
-    MaterialButton btArtist;
-    SongAdapterSearch songAdapterSearch;
-    List<Song> songList;
+    private ImageView ivBack;
+    private SearchView svSearch;
+    private RecyclerView rcvSong;
+    private TextView tvPlayWhatYouLove;
+    private TextView tvSearchFor;
+    private NestedScrollView nsvChoose;
+    private boolean choose;
+    private MaterialButton btSong;
+    private MaterialButton btArtist;
+    SongAdapter songAdapter;
+    private List<Song> songListSearchSong;
+    private List<Song> songListSearchArtist;
+    private List<Artist> artistList;
+    List<Song> resultQuery;
     Context context;
+    DatabaseReference songDatabaseReference;
+    DatabaseReference artistDatabaseReference;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -58,6 +68,12 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         context = getContext();
+        artistList = new ArrayList<>();
+        songListSearchSong = new ArrayList<>();
+        songListSearchArtist = new ArrayList<>();
+        resultQuery = new ArrayList<>();
+        artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
+        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
         View view = inflater.inflate(R.layout.fragment_on_search, container, false);
 
         choose = true;
@@ -83,10 +99,63 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
         nsvChoose = view.findViewById(R.id.nsvChoose);
         tvPlayWhatYouLove = view.findViewById(R.id.tvPlayWhatYouLove);
         tvSearchFor = view.findViewById(R.id.tvSearchFor);
-
-
+        songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
+        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
         return view;
     }
+
+    private final ValueEventListener artistValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                String artistId = dataSnapshot.getKey();
+                String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_IMAGE).getValue(String.class);
+                Artist artist = new Artist(artistId, artistName, artistImage);
+                artistList.add(artist);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+
+        }
+    };
+
+    private final ValueEventListener songValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                String genreId = dataSnapshot.child(Constant.CHILD_SONG_GENRE_ID).getValue(String.class);
+                String songId = dataSnapshot.getKey();
+                String songName = dataSnapshot.child(Constant.CHILD_SONG_NAME).getValue(String.class);
+                String songImage = dataSnapshot.child(Constant.CHILD_SONG_IMAGE).getValue(String.class);
+                String songSource = dataSnapshot.child(Constant.CHILD_SONG_SOURCE).getValue(String.class);
+                String artistsId = dataSnapshot.child(Constant.CHILD_SONG_ARTIST_ID).getValue(String.class);
+                String duration = dataSnapshot.child(Constant.CHILD_DURATION).getValue(String.class);
+                Song songForSongList = new Song(songId, songName, songImage, songSource, genreId, artistsId, duration);
+                for (Artist artist : artistList) {
+                    if (artist.getArtistId().equals(artistsId)) {
+                        songForSongList.setArtist(artist.getArtistName());
+                    }
+                }
+                songListSearchSong.add(songForSongList);
+                Song songForAristList = new Song(songId, songName, songImage, songSource, genreId, artistsId, duration);
+                for (Artist artist : artistList) {
+                    if (artist.getArtistId().equals(artistsId)) {
+                        songForAristList.setArtist(artist.getArtistName());
+                        songForAristList.setSongImage(artist.getArtistImage());
+                    }
+                }
+                songListSearchArtist.add(songForAristList);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+
+        }
+    };
 
     private final View.OnFocusChangeListener onFocusChangeListener = (view, b) -> {
         if (b) {
@@ -119,11 +188,21 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
                 tvPlayWhatYouLove.setVisibility(View.GONE);
                 tvSearchFor.setVisibility(View.GONE);
                 if (choose) {
-                    songList = Database.getSongList(context).stream().filter(song -> song.getSongName().contains(newText)).collect(Collectors.toList());
+                    for (Song song : songListSearchSong) {
+                        if (song.getSongName().contains(newText)) {
+                            resultQuery.add(song);
+                            setSongAdapter();
+                        }
+                    }
                 } else {
-                    songList = Database.getSongList(context).stream().filter(song -> song.getArtistsName().contains(newText)).collect(Collectors.toList());
+                    for (Song song : songListSearchArtist) {
+                        if (song.getArtist().contains(newText)) {
+                            resultQuery.add(song);
+                            setSongAdapter();
+                        }
+                    }
                 }
-                if (songList.isEmpty()) {
+                if (resultQuery.isEmpty()) {
                     tvPlayWhatYouLove.setVisibility(View.VISIBLE);
                     tvSearchFor.setVisibility(View.VISIBLE);
                     rcvSong.setVisibility(View.GONE);
@@ -132,13 +211,16 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
                     builder.append("Couldn't find \"").append(newText).append("\"");
                     tvPlayWhatYouLove.setText(builder);
                     tvSearchFor.setText(R.string.try_searching);
-                } else {
-                    setSongAdapter();
                 }
             }
             return false;
         }
     };
+
+    private void setSongAdapter() {
+        songAdapter = new SongAdapter(getContext(), resultQuery, this);
+        rcvSong.setAdapter(songAdapter);
+    }
 
     private final View.OnClickListener onClickListener = view -> {
         if (getActivity() != null) {
@@ -153,21 +235,27 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
     }
 
     public void findByQuery(boolean flag) {
-        if (songList != null) {
-            songList.clear();
+        if (resultQuery != null) {
+            resultQuery.clear();
         }
         String query = svSearch.getQuery().toString();
         if (flag) {
-            songList = Database.getSongList(context).stream().filter(song -> song.getSongName().contains(query)).collect(Collectors.toList());
+            for (Song song : songListSearchSong) {
+                if (song.getSongName().contains(query)) {
+                    resultQuery.add(song);
+                    setSongAdapter();
+                }
+            }
         } else {
-            songList = Database.getSongList(context).stream().filter(song -> song.getArtistsName().contains(query)).collect(Collectors.toList());
+            for (Song song : songListSearchArtist) {
+                String artistName = song.getArtist();
+                if (artistName.contains(query)) {
+                    resultQuery.add(song);
+                    setSongAdapter();
+                }
+            }
         }
-        setSongAdapter();
-    }
 
-    private void setSongAdapter() {
-        songAdapterSearch = new SongAdapterSearch(getContext(), songList, this);
-        rcvSong.setAdapter(songAdapterSearch);
     }
 
     private final View.OnClickListener btSongOnClickListener = view -> {

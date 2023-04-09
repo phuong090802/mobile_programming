@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "973221105336",
+    "firebase_url": "https://music-and-fm-default-rtdb.firebaseio.com",
+    "project_id": "music-and-fm",
+    "storage_bucket": "music-and-fm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973221105336:android:b5f23be08ad3dae4516e4d",
+        "android_client_info": {
+          "package_name": "com.ute.project2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "973221105336-8t7f264tp11u6rv6qjmj77iaegjjnqfc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC33ZOtSKv3stc_U9az7fbW5UgGsXR_M7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "973221105336-8t7f264tp11u6rv6qjmj77iaegjjnqfc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -16,7 +16,7 @@
         android:gravity="center_vertical"
         android:text=""
         android:textSize="18sp"
-        app:drawableStartCompat="@drawable/md_arrow_back" />
+        app:drawableStartCompat="@drawable/md_arrow" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsvSongForGenre"

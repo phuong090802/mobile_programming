@@ -6,44 +6,48 @@
     tools:ignore="TextSizeCheck">
 
     <ImageView
-        android:id="@+id/my_image_view"
+        android:layout_height="@dimen/height_image_view_custom_notification"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:contentDescription="@string/artists"
+        android:id="@+id/image_view_notification"
         android:scaleType="centerCrop"
-        android:src="@drawable/notification" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="@string/artists"
+        android:src="@drawable/notification_image" />
 
     <LinearLayout
-        android:layout_marginStart="15dp"
         android:id="@+id/layoutStart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_centerInParent="true"
+        android:layout_marginHorizontal="10dp"
         android:layout_toStartOf="@id/layoutEnd"
         android:gravity="center"
         android:orientation="vertical"
         android:weightSum="2">
 
         <TextView
-            android:textColor="@color/md_theme_light_surfaceVariant"
-            android:layout_marginVertical="4dp"
             android:id="@+id/tvNotificationSongName"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginVertical="4dp"
             android:layout_weight="1"
             android:text="@string/song_name"
+            android:textColor="@color/md_theme_light_surfaceVariant"
             android:textSize="18sp" />
 
         <TextView
-            android:textColor="@color/md_theme_light_surfaceVariant"
-
-            android:layout_marginVertical="4dp"
             android:id="@+id/tvNotificationArtistName"
+
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginVertical="4dp"
             android:layout_weight="1"
             android:text="@string/artist_name"
+            android:textColor="@color/md_theme_light_surfaceVariant"
             android:textSize="16sp" />
 
     </LinearLayout>
@@ -62,7 +66,7 @@
             android:layout_height="40dp"
             android:layout_marginHorizontal="15dp"
             android:contentDescription="@string/previous"
-            android:src="@drawable/md_skip_previous"
+            android:src="@drawable/md_previous"
             tools:ignore="ImageContrastCheck" />
 
         <ImageView
@@ -70,7 +74,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:contentDescription="@string/play_what_you_love"
-            android:src="@drawable/md_play_circle" />
+            android:src="@drawable/md_play" />
 
         <ImageView
             android:id="@+id/ivNext"
@@ -78,7 +82,7 @@
             android:layout_height="40dp"
             android:layout_marginHorizontal="15dp"
             android:contentDescription="@string/next"
-            android:src="@drawable/md_skip_next" />
+            android:src="@drawable/md_next" />
 
     </LinearLayout>
 </RelativeLayout>

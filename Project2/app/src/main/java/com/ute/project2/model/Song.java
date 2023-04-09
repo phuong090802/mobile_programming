@@ -3,27 +3,34 @@ package com.ute.project2.model;
 import java.io.Serializable;
 
 public class Song implements Serializable {
+    private final String songId;
     private final String songName;
-    private final int songImage;
+    private String songImage;
     private final String songSource;
-    private final String genreName;
-    private final String artistsName;
+    private final String genre;
+    private String artist;
     private final String duration;
 
-    public Song(String songName, int songImage, String songSource, String genreName, String artistsName, String duration) {
+
+    public Song(String songId, String songName, String songImage, String songSource, String genre, String artist, String duration) {
+        this.songId = songId;
         this.songName = songName;
         this.songImage = songImage;
         this.songSource = songSource;
-        this.genreName = genreName;
-        this.artistsName = artistsName;
+        this.genre = genre;
+        this.artist = artist;
         this.duration = duration;
+    }
+
+    public String getSongId() {
+        return songId;
     }
 
     public String getSongName() {
         return songName;
     }
 
-    public int getSongImage() {
+    public String getSongImage() {
         return songImage;
     }
 
@@ -31,15 +38,24 @@ public class Song implements Serializable {
         return songSource;
     }
 
-    public String getGenreName() {
-        return genreName;
+    public String getGenre() {
+        return genre;
     }
 
-    public String getArtistsName() {
-        return artistsName;
+    public String getArtist() {
+        return artist;
     }
 
     public String getDuration() {
         return duration;
     }
+
+    public void setSongImage(String songImage) {
+        this.songImage = songImage;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
 }

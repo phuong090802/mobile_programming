@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class GenreItemDecoration extends RecyclerView.ItemDecoration {
     private final int space;
+    private static final int COLUMN = 2;
 
     public GenreItemDecoration(int space) {
         this.space = space;
@@ -16,13 +17,10 @@ public class GenreItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
-        outRect.left = space;
-        outRect.right = space;
+        int position = parent.getChildAdapterPosition(view);
         outRect.bottom = space;
-        if (parent.getChildLayoutPosition(view) == 0 || parent.getChildLayoutPosition(view) == 1) {
-            outRect.top = space;
-        } else {
-            outRect.top = 0;
-        }
+        outRect.top = (position == 0 || position == 1) ? space : 0;
+        outRect.left = (position % COLUMN != 0) ? space : 0;
+        outRect.right = (position % COLUMN == 0) ? space : 0;
     }
 }

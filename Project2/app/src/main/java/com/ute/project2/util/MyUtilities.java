@@ -10,10 +10,4 @@ public class MyUtilities {
         return formatter.format(time);
     }
 
-    public static int timeToInt(String time) {
-        String[] timeParts = time.split(":");
-        int minus = Integer.parseInt(timeParts[0]);
-        int seconds = Integer.parseInt(timeParts[1]);
-        return (minus * 60) + seconds;
-    }
 }

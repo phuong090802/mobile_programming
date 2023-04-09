@@ -1,6 +1,7 @@
 package com.ute.project2.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -21,9 +22,9 @@ import com.ute.project2.model.Song;
 import java.util.List;
 
 public class SongAdapterDownload extends RecyclerView.Adapter<SongAdapterDownload.ViewHolder> {
-    List<Song> songList;
-    Context context;
-    SelectSongListener listener;
+    private final List<Song> songList;
+    private final Context context;
+    private final SelectSongListener listener;
 
     public SongAdapterDownload(Context context, List<Song> songList, SelectSongListener listener) {
         this.songList = songList;
@@ -41,9 +42,9 @@ public class SongAdapterDownload extends RecyclerView.Adapter<SongAdapterDownloa
     @Override
     public void onBindViewHolder(@NonNull SongAdapterDownload.ViewHolder holder, int position) {
         Song song = songList.get(position);
-        holder.ivSong.setImageResource(song.getSongImage());
+        holder.ivSong.setImageURI(Uri.parse(song.getSongImage()));
         holder.tvSongName.setText(song.getSongName());
-        holder.tvArtistName.setText(song.getArtistsName());
+        holder.tvArtistName.setText(song.getArtist());
         if (listener != null) {
             holder.cvSongItem.setOnClickListener(view -> listener.onItemClicked(song));
         }
@@ -55,17 +56,17 @@ public class SongAdapterDownload extends RecyclerView.Adapter<SongAdapterDownloa
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener  {
-        ImageView ivSong;
-        TextView tvSongName;
-        TextView tvArtistName;
-        CardView cvSongItem;
+        private final ImageView ivSong;
+        private final TextView tvSongName;
+        private final TextView tvArtistName;
+        private final CardView cvSongItem;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivSong = itemView.findViewById(R.id.ivSong);
             tvSongName = itemView.findViewById(R.id.tvSongName);
             tvArtistName = itemView.findViewById(R.id.tvArtistName);
-            cvSongItem = itemView.findViewById(R.id.cvSongItem);
+            cvSongItem = itemView.findViewById(R.id.card_view_song_item);
             cvSongItem.setOnCreateContextMenuListener(this);
         }
 

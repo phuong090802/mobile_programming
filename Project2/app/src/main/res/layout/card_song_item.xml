@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cvSongItem"
+    android:id="@+id/card_view_song_item"
     android:layout_width="match_parent"
-    android:layout_height="80dp">
+    android:layout_height="@dimen/height_card_view_song_item">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,20 +10,21 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:scaleType="fitXY"
             android:id="@+id/ivSong"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/width_image_view_song_item"
+            android:layout_height="@dimen/height_card_view_song_item"
             android:contentDescription="@string/song_name"
-            android:src="@drawable/genre" />
+            android:src="@drawable/example_image" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
             <TextView
+                android:layout_marginHorizontal="10dp"
                 android:id="@+id/tvSongName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -31,6 +32,7 @@
                 android:textSize="18sp" />
 
             <TextView
+                android:layout_marginHorizontal="10dp"
                 android:id="@+id/tvArtistName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

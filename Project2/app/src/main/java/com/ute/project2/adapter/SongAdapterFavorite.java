@@ -14,16 +14,18 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
 import com.ute.project2.R;
 import com.ute.project2.event.SelectSongListener;
 import com.ute.project2.model.Song;
 
+import java.io.File;
 import java.util.List;
 
 public class SongAdapterFavorite extends RecyclerView.Adapter<SongAdapterFavorite.ViewHolder> {
-    List<Song> songList;
-    Context context;
-    SelectSongListener listener;
+    private final List<Song> songList;
+    private final Context context;
+    private final SelectSongListener listener;
 
     public SongAdapterFavorite(Context context, List<Song> songList, SelectSongListener listener) {
         this.songList = songList;
@@ -41,9 +43,11 @@ public class SongAdapterFavorite extends RecyclerView.Adapter<SongAdapterFavorit
     @Override
     public void onBindViewHolder(@NonNull SongAdapterFavorite.ViewHolder holder, int position) {
         Song song = songList.get(position);
-        holder.ivSong.setImageResource(song.getSongImage());
+        File cacheDir = context.getCacheDir();
+        new File(cacheDir, "favorite-image-picasso-cache");
+        Picasso.get().load(song.getSongImage()).into(holder.ivSong);
         holder.tvSongName.setText(song.getSongName());
-        holder.tvArtistName.setText(song.getArtistsName());
+        holder.tvArtistName.setText(song.getArtist());
         if (listener != null) {
             holder.cvSongItem.setOnClickListener(view -> listener.onItemClicked(song));
         }
@@ -54,18 +58,18 @@ public class SongAdapterFavorite extends RecyclerView.Adapter<SongAdapterFavorit
         return songList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener  {
-        ImageView ivSong;
-        TextView tvSongName;
-        TextView tvArtistName;
-        CardView cvSongItem;
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+        private final ImageView ivSong;
+        private final TextView tvSongName;
+        private final TextView tvArtistName;
+        private final CardView cvSongItem;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivSong = itemView.findViewById(R.id.ivSong);
             tvSongName = itemView.findViewById(R.id.tvSongName);
             tvArtistName = itemView.findViewById(R.id.tvArtistName);
-            cvSongItem = itemView.findViewById(R.id.cvSongItem);
+            cvSongItem = itemView.findViewById(R.id.card_view_song_item);
             cvSongItem.setOnCreateContextMenuListener(this);
         }
 

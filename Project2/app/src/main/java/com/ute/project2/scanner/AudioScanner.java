@@ -6,7 +6,6 @@ import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.provider.MediaStore;
 
-import com.ute.project2.R;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.model.Song;
 import com.ute.project2.util.MyUtilities;
@@ -19,6 +18,7 @@ public class AudioScanner {
     public static List<Song> scanAudioFiles(Context context) {
         List<Song> songs = new ArrayList<>();
         String[] projection = {
+                MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.ARTIST,
@@ -35,6 +35,7 @@ public class AudioScanner {
         if (cursor != null) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
+                String songId = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
                 String songName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
                 String songSource = "file://" + cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
                 String artistsName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
@@ -46,7 +47,9 @@ public class AudioScanner {
                     genreName = genreCursor.getString(genreCursor.getColumnIndexOrThrow(MediaStore.Audio.Genres.NAME));
                     genreCursor.close();
                 }
-                songs.add(new Song(songName, R.drawable.song, songSource, genreName, artistsName, MyUtilities.formatTime(duration)));
+
+
+                songs.add(new Song(songId, songName,Constant.DEFAULT_IMAGE, songSource, genreName, artistsName, MyUtilities.formatTime(duration)));
                 cursor.moveToNext();
             }
             cursor.close();

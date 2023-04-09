@@ -14,28 +14,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ute.project2.adapter.SongAdapterSearch;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.ute.project2.adapter.SongAdapter;
 import com.ute.project2.constant.Constant;
-import com.ute.project2.database.Database;
 import com.ute.project2.decoration.ItemDecoration;
 import com.ute.project2.event.OnViewClickListener;
 import com.ute.project2.event.SelectSongListener;
+import com.ute.project2.model.Artist;
 import com.ute.project2.model.Genre;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GenreFragment extends Fragment implements SelectSongListener {
     private OnViewClickListener onViewClickListener;
-    TextView tvGenreName;
-    NestedScrollView nsvSongForGenre;
+    private TextView tvGenreName;
+    private NestedScrollView nsvSongForGenre;
     TextView tvMainGenreName;
     RecyclerView recyclerView;
-    List<Song> songList;
-    Genre genre;
+    private List<Song> songList;
+    private List<Artist> artistList;
+    private Genre genre;
     Context context;
+    DatabaseReference songDatabaseReference;
+    DatabaseReference artistDatabaseReference;
+    SongAdapter adapter;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -45,15 +54,17 @@ public class GenreFragment extends Fragment implements SelectSongListener {
         }
     }
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         context = getContext();
+        songList = new ArrayList<>();
+        artistList = new ArrayList<>();
+        artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
+        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
         Bundle bundle = getArguments();
         if (bundle != null) {
             genre = (Genre) bundle.get("genre");
-            songList = Database.getSongList(context).stream().filter(song -> song.getGenreName().contains(genre.getGenreName())).collect(Collectors.toList());
         }
         View view = inflater.inflate(R.layout.fragment_genre, container, false);
 
@@ -70,10 +81,67 @@ public class GenreFragment extends Fragment implements SelectSongListener {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new ItemDecoration(22));
 
-        SongAdapterSearch adapter = new SongAdapterSearch(getContext(), songList, this);
-        recyclerView.setAdapter(adapter);
+
+        songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
+        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
+
+
         return view;
     }
+
+    private final ValueEventListener songValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                String genreId = dataSnapshot.child(Constant.CHILD_SONG_GENRE_ID).getValue(String.class);
+                if (genre.getGenreId().equals(genreId)) {
+                    String songId = dataSnapshot.getKey();
+                    String songName = dataSnapshot.child(Constant.CHILD_SONG_NAME).getValue(String.class);
+                    String songImage = dataSnapshot.child(Constant.CHILD_SONG_IMAGE).getValue(String.class);
+                    String songSource = dataSnapshot.child(Constant.CHILD_SONG_SOURCE).getValue(String.class);
+                    String artistsId = dataSnapshot.child(Constant.CHILD_SONG_ARTIST_ID).getValue(String.class);
+                    String duration = dataSnapshot.child(Constant.CHILD_DURATION).getValue(String.class);
+                    Song song = new Song(songId, songName, songImage, songSource, genreId, artistsId, duration);
+                    for (Artist artist : artistList) {
+                        if (artist.getArtistId().equals(artistsId)) {
+                            song.setArtist(artist.getArtistName());
+                        }
+                    }
+                    songList.add(song);
+                    setGenreAdapter();
+                }
+
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+
+        }
+    };
+
+    private void setGenreAdapter() {
+        adapter = new SongAdapter(getContext(), songList, this);
+        recyclerView.setAdapter(adapter);
+    }
+
+    private final ValueEventListener artistValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                String artistId = dataSnapshot.getKey();
+                String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                Artist artist = new Artist(artistId, artistName, artistImage);
+                artistList.add(artist);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+
+        }
+    };
 
     private final View.OnClickListener onClickListener = view -> {
         if (getActivity() != null) {
