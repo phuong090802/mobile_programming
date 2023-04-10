@@ -122,6 +122,13 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
         }
     };
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        svSearch.setQuery("", false);
+        svSearch.requestFocus();
+    }
+
     private final ValueEventListener songValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -188,6 +195,7 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
                 tvPlayWhatYouLove.setVisibility(View.GONE);
                 tvSearchFor.setVisibility(View.GONE);
                 if (choose) {
+                    resultQuery.clear();
                     for (Song song : songListSearchSong) {
                         if (song.getSongName().contains(newText)) {
                             resultQuery.add(song);
@@ -195,6 +203,7 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
                         }
                     }
                 } else {
+                    resultQuery.clear();
                     for (Song song : songListSearchArtist) {
                         if (song.getArtist().contains(newText)) {
                             resultQuery.add(song);
@@ -240,6 +249,7 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
         }
         String query = svSearch.getQuery().toString();
         if (flag) {
+            resultQuery.clear();
             for (Song song : songListSearchSong) {
                 if (song.getSongName().contains(query)) {
                     resultQuery.add(song);
@@ -247,6 +257,7 @@ public class OnSearchFragment extends Fragment implements SelectSongListener {
                 }
             }
         } else {
+            resultQuery.clear();
             for (Song song : songListSearchArtist) {
                 String artistName = song.getArtist();
                 if (artistName.contains(query)) {

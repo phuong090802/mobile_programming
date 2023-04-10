@@ -36,7 +36,10 @@ public class Constant {
     public static final String CHILD_ARTIST_IMAGE = "artistImage";
     public static final String ROOT_FAVORITE = "favorite";
     public static final String CHILD_FAVORITE_SONG_ID = "songId";
+    public static final String SONG_DIRECTORY = "songSource";
     public static final String SONG_SOURCE_LOCATION = "songSource/";
-
+    public static final String FIREBASE_STORAGE = "firebasestorage";
+    public static final String SONG_ID = "songId";
+    public static final String DOWNLOAD = "Download/";
 
 }

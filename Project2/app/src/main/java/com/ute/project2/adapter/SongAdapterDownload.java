@@ -2,6 +2,7 @@ package com.ute.project2.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -19,6 +20,7 @@ import com.ute.project2.R;
 import com.ute.project2.event.SelectSongListener;
 import com.ute.project2.model.Song;
 
+import java.io.File;
 import java.util.List;
 
 public class SongAdapterDownload extends RecyclerView.Adapter<SongAdapterDownload.ViewHolder> {
@@ -30,6 +32,12 @@ public class SongAdapterDownload extends RecyclerView.Adapter<SongAdapterDownloa
         this.songList = songList;
         this.context = context;
         this.listener = listener;
+    }
+
+    public void removeSong(int position) {
+        songList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
     }
 
     @NonNull
@@ -55,7 +63,7 @@ public class SongAdapterDownload extends RecyclerView.Adapter<SongAdapterDownloa
         return songList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener  {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private final ImageView ivSong;
         private final TextView tvSongName;
         private final TextView tvArtistName;
@@ -70,14 +78,42 @@ public class SongAdapterDownload extends RecyclerView.Adapter<SongAdapterDownloa
             cvSongItem.setOnCreateContextMenuListener(this);
         }
 
+
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            RecyclerView recyclerView = (RecyclerView) view.getParent();
+            SongAdapterDownload songAdapter = (SongAdapterDownload) recyclerView.getAdapter();
+            int position = recyclerView.getChildAdapterPosition(view);
+            Song song = null;
+            if (songAdapter != null) {
+                song = songAdapter.songList.get(position);
+            }
             MenuInflater inflater = new MenuInflater(view.getContext());
             inflater.inflate(R.menu.menu_context_download, contextMenu);
+            Song finalSong = song;
             contextMenu.findItem(R.id.mnRemove).setOnMenuItemClickListener(menuItem -> {
-                Toast.makeText(view.getContext(), "Remove", Toast.LENGTH_SHORT).show();
+                if (finalSong != null) {
+                    File file = new File(standardPath(finalSong.getSongSource()));
+                    Log.e("FILE", file.toString());
+                    if (file.exists()) {
+                        boolean result = file.delete();
+                        if (result) {
+                            Toast.makeText(view.getContext(), "Remove " + "\"" + finalSong.getSongName() + "\"" + " successfully.", Toast.LENGTH_SHORT).show();
+                            songAdapter.removeSong(position);
+                        } else {
+                            Toast.makeText(view.getContext(), "Failed to remove " + "\"" + finalSong.getSongName() + "\"" + ".", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(view.getContext(), "\"" + finalSong.getSongName() + "\"" + " not found.", Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                }
                 return false;
             });
         }
+    }
+
+    private static String standardPath(String path) {
+        return path.replace("file:", "");
     }
 }

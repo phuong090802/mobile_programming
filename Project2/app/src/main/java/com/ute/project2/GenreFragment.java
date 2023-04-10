@@ -80,7 +80,7 @@ public class GenreFragment extends Fragment implements SelectSongListener {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new ItemDecoration(22));
-
+        setGenreAdapter();
 
         songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
         songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);

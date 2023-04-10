@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,23 +21,30 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.ute.project2.constant.Constant;
 import com.ute.project2.model.Artist;
+import com.ute.project2.model.Favorite;
 import com.ute.project2.model.Song;
 import com.ute.project2.sharedpreferences.StorageSingleton;
 import com.ute.project2.util.MyUtilities;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SongFragment extends Fragment {
@@ -101,9 +110,13 @@ public class SongFragment extends Fragment {
             String storage = StorageSingleton.getString(Constant.STORAGE_SONG_NAME);
             globalCheck = current.equals(storage);
             if (globalSong != null) {
-                duration = MediaPlayer.create(context, Uri.parse(globalSong.getSongSource())).getDuration();
-                tvDuration.setText(globalSong.getDuration());
-                seekBar.setMax(duration);
+                try {
+                    duration = MediaPlayer.create(context, Uri.parse(globalSong.getSongSource())).getDuration();
+                    tvDuration.setText(globalSong.getDuration());
+                    seekBar.setMax(duration);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             if (storage == null) {
                 globalCheck = true;
@@ -239,7 +252,6 @@ public class SongFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, MyService.class);
-
             if (!globalCheck) {
                 context.stopService(intent);
                 globalCheck = true;
@@ -261,9 +273,66 @@ public class SongFragment extends Fragment {
         changeSong(song);
     };
 
-    private final View.OnClickListener ivDownloadOnClickListener = view -> Toast.makeText(context, "Download " + "\"" + globalSong.getSongName() + "\"", Toast.LENGTH_SHORT).show();
+    private final View.OnClickListener ivDownloadOnClickListener = view -> {
+        Toast.makeText(context, "Download " + "\"" + globalSong.getSongName() + ".\"", Toast.LENGTH_SHORT).show();
+        downloadSong(globalSong.getSongSource());
+    };
 
-    private final View.OnClickListener ivFavoriteOnClickListener = view -> Toast.makeText(context, "Add " + "\"" + globalSong.getSongName() + "\"" + " to favorites", Toast.LENGTH_SHORT).show();
+    private final View.OnClickListener ivFavoriteOnClickListener = view -> addToFavorite(globalSong.getSongId(), globalSong.getSongName());
+
+    private void addToFavorite(String songId, String songName) {
+        DatabaseReference favoriteDatabaseReference = FirebaseDatabase.getInstance().getReference(Constant.ROOT_FAVORITE);
+        favoriteDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean flag = true;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String favoriteSongId = dataSnapshot.child(Constant.SONG_ID).getValue(String.class);
+                    if (favoriteSongId != null) {
+                        if (favoriteSongId.equals(songId)) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+                if (flag) {
+                    Favorite favorite = new Favorite(String.valueOf(System.currentTimeMillis()), songId);
+                    favoriteDatabaseReference.child(favorite.getFavoriteId()).setValue(favorite.getSongId());
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Constant.ROOT_FAVORITE).child(favorite.getFavoriteId());
+                    Map<String, String> map = new HashMap<>();
+                    map.put(Constant.SONG_ID, favorite.getSongId());
+                    databaseReference.setValue(map);
+                    Toast.makeText(context, "Add " + "\"" + songName + "\"" + " to favorites.", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Toast.makeText(context, "\"" + songName + "\"" + " existing in favorites.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
+    private void downloadSong(String url) {
+        if (url.contains(Constant.FIREBASE_STORAGE)) {
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(Constant.SONG_DIRECTORY);
+            Task<ListResult> listResultTask = storageReference.listAll();
+            listResultTask.addOnSuccessListener(listResult -> {
+                for (StorageReference item : listResult.getItems()) {
+                    Log.e("ITEM", item.getName());
+                    if (url.contains(item.getName())) {
+                        StorageReference audio = FirebaseStorage.getInstance().getReference().child(Constant.SONG_SOURCE_LOCATION + item.getName());
+                        File localFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), item.getName());
+                        audio.getFile(localFile).addOnSuccessListener(taskSnapshot -> Log.e("DOWNLOAD", "Download successful.")).addOnFailureListener(e -> Log.e("ERROR", e.getMessage()));
+                    }
+                }
+            }).addOnFailureListener(e -> Log.e("FAIL", "addOnFailureListener."));
+        }
+    }
 
 
     @Override
@@ -286,9 +355,12 @@ public class SongFragment extends Fragment {
         File cacheDir = context.getCacheDir();
         new File(cacheDir, "song-image-picasso-cache");
         Picasso.get().load(globalSong.getSongImage()).into(ivSongImage);
-
         intent.putExtra("song", globalSong);
-        intent.putExtra("isPlaying", isPlaying);
+        intent.putExtra("isPlaying", true);
+        Gson gson = new Gson();
+        String json = gson.toJson(songList);
+        intent.putExtra("json", json);
+        ivPlayPause.setImageResource(R.drawable.md_pause);
         context.startService(intent);
     }
 
