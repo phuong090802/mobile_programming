@@ -9,7 +9,7 @@
     tools:context=".GenreFragment">
 
     <TextView
-        android:id="@+id/tvGenreName"
+        android:id="@+id/text_view_genre_name"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:drawablePadding="10dp"
@@ -19,7 +19,7 @@
         app:drawableStartCompat="@drawable/md_arrow" />
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nsvSongForGenre"
+        android:id="@+id/nested_scroll_view_fragment_genre"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -30,14 +30,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvMainGenreName"
+                android:id="@+id/text_view_main_genre_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
                 android:textSize="24sp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/recycler_view_fragment_genre"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>

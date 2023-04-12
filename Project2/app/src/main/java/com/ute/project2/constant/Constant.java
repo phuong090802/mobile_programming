@@ -40,6 +40,5 @@ public class Constant {
     public static final String SONG_SOURCE_LOCATION = "songSource/";
     public static final String FIREBASE_STORAGE = "firebasestorage";
     public static final String SONG_ID = "songId";
-    public static final String DOWNLOAD = "Download/";
 
 }

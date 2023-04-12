@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -30,12 +29,11 @@ import java.util.Stack;
 
 
 public class MainActivity extends AppCompatActivity implements OnViewClickListener, ItemLibraryListener {
-    private BottomNavigationView bottomNavigationView;
-    private final Stack<Fragment> fragmentStack = new Stack<>();
+    private static BottomNavigationView bottomNavigationView;
+    private static final Stack<Fragment> fragmentStack = new Stack<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);

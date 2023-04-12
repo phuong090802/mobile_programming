@@ -58,7 +58,7 @@
         android:id="@+id/text_view_current"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/_0_00" />
+        android:text="@string/_00_00" />
 
     <SeekBar
         android:id="@+id/seek_bar"
@@ -70,7 +70,7 @@
         android:id="@+id/text_view_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/_0_00" />
+        android:text="@string/_00_00" />
 
 
     <androidx.constraintlayout.helper.widget.Flow

@@ -34,17 +34,15 @@ import java.util.List;
 
 public class GenreFragment extends Fragment implements SelectSongListener {
     private OnViewClickListener onViewClickListener;
-    private TextView tvGenreName;
-    private NestedScrollView nsvSongForGenre;
-    TextView tvMainGenreName;
+    private TextView textViewGenreName;
+    TextView textViewMainGenreName;
     RecyclerView recyclerView;
-    private List<Song> songList;
-    private List<Artist> artistList;
-    private Genre genre;
-    Context context;
-    DatabaseReference songDatabaseReference;
-    DatabaseReference artistDatabaseReference;
-    SongAdapter adapter;
+    private static List<Song> songList;
+    private static final List<Artist> artistList = new ArrayList<>();
+    private static Genre genre;
+    private Context context;
+    private SongAdapter songAdapter;
+    private View view;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -57,36 +55,46 @@ public class GenreFragment extends Fragment implements SelectSongListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getContext();
+        view = inflater.inflate(R.layout.fragment_genre, container, false);
         songList = new ArrayList<>();
-        artistList = new ArrayList<>();
-        artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
-        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
+        context = getContext();
+        loadDataArtist();
         Bundle bundle = getArguments();
         if (bundle != null) {
             genre = (Genre) bundle.get("genre");
         }
-        View view = inflater.inflate(R.layout.fragment_genre, container, false);
-
-        tvGenreName = view.findViewById(R.id.tvGenreName);
-        tvGenreName.setOnClickListener(onClickListener);
-
-        tvMainGenreName = view.findViewById(R.id.tvMainGenreName);
-        tvMainGenreName.setText(genre.getGenreName());
-        nsvSongForGenre = view.findViewById(R.id.nsvSongForGenre);
-        nsvSongForGenre.setOnScrollChangeListener(onScrollChangeListener);
-
-        recyclerView = view.findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new ItemDecoration(22));
-        setGenreAdapter();
-
-        songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
-        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
-
-
+        initializeView();
+        loadDataSong();
         return view;
+    }
+
+    private void loadDataSong() {
+        DatabaseReference songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
+        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
+    }
+
+    private void loadDataArtist() {
+        DatabaseReference artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
+        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
+    }
+
+    private void initializeView() {
+        if (view != null) {
+            textViewGenreName = view.findViewById(R.id.text_view_genre_name);
+            textViewGenreName.setOnClickListener(onClickListener);
+
+            textViewMainGenreName = view.findViewById(R.id.text_view_main_genre_name);
+            textViewMainGenreName.setText(genre.getGenreName());
+            NestedScrollView nestedScrollView = view.findViewById(R.id.nested_scroll_view_fragment_genre);
+            nestedScrollView.setOnScrollChangeListener(onScrollChangeListener);
+
+            recyclerView = view.findViewById(R.id.recycler_view_fragment_genre);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.addItemDecoration(new ItemDecoration(22));
+            setGenreFragmentAdapter();
+
+        }
     }
 
     private final ValueEventListener songValueEventListener = new ValueEventListener() {
@@ -101,45 +109,50 @@ public class GenreFragment extends Fragment implements SelectSongListener {
                     String songSource = dataSnapshot.child(Constant.CHILD_SONG_SOURCE).getValue(String.class);
                     String artistsId = dataSnapshot.child(Constant.CHILD_SONG_ARTIST_ID).getValue(String.class);
                     String duration = dataSnapshot.child(Constant.CHILD_DURATION).getValue(String.class);
+                    int position = songList.size();
                     Song song = new Song(songId, songName, songImage, songSource, genreId, artistsId, duration);
-                    for (Artist artist : artistList) {
+                    artistList.forEach(artist -> {
                         if (artist.getArtistId().equals(artistsId)) {
                             song.setArtist(artist.getArtistName());
                         }
-                    }
-                    songList.add(song);
-                    setGenreAdapter();
+                    });
+                    addSong(position, song);
                 }
-
             }
         }
 
+
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-
         }
     };
 
-    private void setGenreAdapter() {
-        adapter = new SongAdapter(getContext(), songList, this);
-        recyclerView.setAdapter(adapter);
+    private void addSong(int position, Song song) {
+        songList.add(position, song);
+        songAdapter.notifyItemInserted(position);
+        songAdapter.notifyItemChanged(position, songAdapter.getItemCount());
+    }
+
+    private void setGenreFragmentAdapter() {
+        songAdapter = new SongAdapter(context, songList, this);
+        recyclerView.setAdapter(songAdapter);
     }
 
     private final ValueEventListener artistValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                String artistId = dataSnapshot.getKey();
-                String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
-                String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
-                Artist artist = new Artist(artistId, artistName, artistImage);
-                artistList.add(artist);
+            if (artistList.isEmpty()) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String artistId = dataSnapshot.getKey();
+                    String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                    String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                    artistList.add(new Artist(artistId, artistName, artistImage));
+                }
             }
         }
 
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-
         }
     };
 
@@ -152,11 +165,10 @@ public class GenreFragment extends Fragment implements SelectSongListener {
     private final NestedScrollView.OnScrollChangeListener onScrollChangeListener = new NestedScrollView.OnScrollChangeListener() {
         @Override
         public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-            if (nsvSongForGenre.getScrollY() != 0) {
-                tvGenreName.setText(genre.getGenreName());
-
-            } else if (nsvSongForGenre.getScrollY() == 0) {
-                tvGenreName.setText("");
+            if (scrollY != 0) {
+                textViewGenreName.setText(genre.getGenreName());
+            } else {
+                textViewGenreName.setText("");
             }
         }
     };

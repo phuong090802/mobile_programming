@@ -140,13 +140,10 @@ public class SongAdapterFavorite extends RecyclerView.Adapter<SongAdapterFavorit
                         }
                     }
                 }
-
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
 

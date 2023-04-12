@@ -16,7 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.ute.project2.R;
+import com.ute.project2.constant.Constant;
 import com.ute.project2.event.SelectSongListener;
 import com.ute.project2.model.Song;
 
@@ -112,6 +116,7 @@ public class SongAdapterDownload extends RecyclerView.Adapter<SongAdapterDownloa
             });
         }
     }
+
 
     private static String standardPath(String path) {
         return path.replace("file:", "");

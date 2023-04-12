@@ -19,9 +19,7 @@ import com.ute.project2.item.ItemLibrary;
 
 public class YourLibraryFragment extends Fragment implements ItemLibraryListener {
     private ItemLibraryListener itemLibraryListener;
-    RecyclerView recyclerView;
-    LibraryAdapter adapter;
-
+    private View view;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -33,16 +31,21 @@ public class YourLibraryFragment extends Fragment implements ItemLibraryListener
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_your_library, container, false);
-        recyclerView = view.findViewById(R.id.recycler_view_library);
-        adapter = new LibraryAdapter(getContext(), itemLibraryListener, Constant.ITEM_LIBRARY_LIST);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new ItemDecoration(22));
-        recyclerView.setAdapter(adapter);
+        view = inflater.inflate(R.layout.fragment_your_library, container, false);
+        initializeView();
         return view;
     }
 
+    private void initializeView() {
+        if (view != null) {
+            RecyclerView recyclerView = view.findViewById(R.id.recycler_view_library);
+            LibraryAdapter libraryAdapter = new LibraryAdapter(getContext(), itemLibraryListener, Constant.ITEM_LIBRARY_LIST);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.addItemDecoration(new ItemDecoration(22));
+            recyclerView.setAdapter(libraryAdapter);
+        }
+    }
 
     @Override
     public void onItemLibraryOnClick(ItemLibrary itemLibrary) {

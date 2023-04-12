@@ -7,11 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -35,14 +32,12 @@ import java.util.List;
 
 
 public class SearchFragment extends Fragment implements SelectGenreListener {
-    private OnViewClickListener onViewClickListener;
-    RecyclerView recyclerView;
-    SearchBar sbSearch;
-    private NestedScrollView nestedScrollView;
-    private TextView tvSearch;
-    GenreAdapter adapter;
-    DatabaseReference genreDatabaseReference;
-    private List<Genre> genreList;
+    private static OnViewClickListener onViewClickListener;
+    private static RecyclerView recyclerView;
+    private GenreAdapter genreAdapter;
+    private static final List<Genre> genreList = new ArrayList<>();
+    private View view;
+    private Context context;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -55,74 +50,66 @@ public class SearchFragment extends Fragment implements SelectGenreListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        genreList = new ArrayList<>();
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
-
-        recyclerView = view.findViewById(R.id.rcGenre);
-        tvSearch = view.findViewById(R.id.tvSearch);
-
-        nestedScrollView = view.findViewById(R.id.nested_scroll_view);
-        nestedScrollView.setOnScrollChangeListener(setOnScrollChangeListener);
-
-        sbSearch = view.findViewById(R.id.sbSearch);
-        sbSearch.setOnClickListener(onClickListener);
-
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
-        recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new GenreItemDecoration(22));
-        adapter = new GenreAdapter(getContext(), genreList, this);
-        recyclerView.setAdapter(adapter);
-
-        genreDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_GENRES);
-        genreDatabaseReference.addListenerForSingleValueEvent(genreValueEventListener);
+        context = getContext();
+        view = inflater.inflate(R.layout.fragment_search, container, false);
+        initializeView();
+        loadDataFirebase();
         return view;
+    }
+
+    private void initializeView() {
+        if (view != null) {
+            SearchBar searchBar = view.findViewById(R.id.search_bar_fragment_search);
+            searchBar.setOnClickListener(onClickListener);
+            recyclerView = view.findViewById(R.id.recycler_view_fragment_search);
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2);
+            recyclerView.setLayoutManager(gridLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.addItemDecoration(new GenreItemDecoration(22));
+            setSearchFragmentAdapter();
+        }
+    }
+
+    private void loadDataFirebase() {
+        DatabaseReference genreDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_GENRES);
+        genreDatabaseReference.addListenerForSingleValueEvent(genreValueEventListener);
+    }
+
+    private void setSearchFragmentAdapter() {
+        genreAdapter = new GenreAdapter(context, genreList, this);
+        recyclerView.setAdapter(genreAdapter);
     }
 
     private final ValueEventListener genreValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                String genreId = dataSnapshot.getKey();
-                String genreName = dataSnapshot.child(Constant.CHILD_GENRE_NAME).getValue(String.class);
-                String genreImage = dataSnapshot.child(CHILD_GENRE_IMAGE).getValue(String.class);
-                int position = genreList.size();
-                Genre genre = new Genre(genreId, genreName, genreImage);
-                genreList.add(genre);
-                adapter.notifyItemInserted(position);
+            if (genreList.isEmpty()) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String genreId = dataSnapshot.getKey();
+                    String genreName = dataSnapshot.child(Constant.CHILD_GENRE_NAME).getValue(String.class);
+                    String genreImage = dataSnapshot.child(CHILD_GENRE_IMAGE).getValue(String.class);
+                    int position = genreList.size();
+                    Genre genre = new Genre(genreId, genreName, genreImage);
+                    addGenre(position, genre);
+                }
             }
-
         }
 
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-
         }
     };
 
-    private final NestedScrollView.OnScrollChangeListener setOnScrollChangeListener = new NestedScrollView.OnScrollChangeListener() {
-        @Override
-        public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-            if (nestedScrollView.getScrollY() != 0) {
-                tvSearch.setVisibility(View.GONE);
-
-            } else if (nestedScrollView.getScrollY() == 0) {
-                tvSearch.setVisibility(View.VISIBLE);
-            }
-        }
-    };
+    private void addGenre(int postion, Genre genre) {
+        genreList.add(postion, genre);
+        genreAdapter.notifyItemInserted(postion);
+        genreAdapter.notifyItemRangeInserted(postion, genreAdapter.getItemCount());
+    }
 
     private final View.OnClickListener onClickListener = view -> onViewClickListener.onSearchBarClicked();
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-    }
 
     @Override
     public void onItemClicked(Genre genre) {
         onViewClickListener.onCardViewGenreClicked(genre);
     }
-
 }

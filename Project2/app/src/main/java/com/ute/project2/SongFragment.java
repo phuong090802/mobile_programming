@@ -53,78 +53,38 @@ public class SongFragment extends Fragment {
     private ImageView ivSongImage;
     private boolean isPlaying;
     private Context context;
-    ImageView ivPrevious;
     private ImageView ivPlayPause;
-    ImageView ivNext;
     private boolean globalCheck;
-    ImageView ivDownload;
-    ImageView ivFavorite;
-    TextView tvDuration;
-    TextView tvCurrent;
+    private TextView tvDuration;
+    private TextView tvCurrent;
     private SeekBar seekBar;
     int duration;
-    DatabaseReference artistDatabaseReference;
-    DatabaseReference songDatabaseReference;
-    private List<Song> songList;
-    private List<Artist> artistList;
+    private static final List<Song> songList = new ArrayList<>();
+    private static final List<Artist> artistList = new ArrayList<>();
+    private View view;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        songList = new ArrayList<>();
-        artistList = new ArrayList<>();
-        artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
-        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
-        songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
-        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
-        Bundle bundle = getArguments();
+        view = inflater.inflate(R.layout.fragment_song, container, false);
         context = getContext();
-        View view = inflater.inflate(R.layout.fragment_song, container, false);
-
-        tvDuration = view.findViewById(R.id.text_view_duration);
-        tvCurrent = view.findViewById(R.id.text_view_current);
-
-        seekBar = view.findViewById(R.id.seek_bar);
-
-        ivDownload = view.findViewById(R.id.ivDownload);
-        ivDownload.setOnClickListener(ivDownloadOnClickListener);
-
-        ivFavorite = view.findViewById(R.id.ivFavorite);
-        ivFavorite.setOnClickListener(ivFavoriteOnClickListener);
-
-
-        ivPrevious = view.findViewById(R.id.ivPrevious);
-        ivPrevious.setOnClickListener(ivPreviousOnClickListener);
-
-        ivPlayPause = view.findViewById(R.id.ivPlayPause);
-        ivPlayPause.setOnClickListener(ivPlayPauseOnClickListener);
-
-        ivNext = view.findViewById(R.id.ivNext);
-        ivNext.setOnClickListener(ivNextOnClickListener);
-
-
+        loadDataArtist();
+        loadDataSong();
+        initialViewPart1();
+        Bundle bundle = getArguments();
         if (bundle != null) {
             globalSong = (Song) bundle.get("song");
             isPlaying = bundle.getBoolean("isPlaying", false);
             String current = StorageSingleton.getString(Constant.CURRENT_SONG_NAME);
             String storage = StorageSingleton.getString(Constant.STORAGE_SONG_NAME);
             globalCheck = current.equals(storage);
-            if (globalSong != null) {
-                try {
-                    duration = MediaPlayer.create(context, Uri.parse(globalSong.getSongSource())).getDuration();
-                    tvDuration.setText(globalSong.getDuration());
-                    seekBar.setMax(duration);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            setDurationView(globalSong);
             if (storage == null) {
                 globalCheck = true;
             }
             if (globalCheck && storage != null) {
                 isPlaying = true;
             }
-
             if (isPlaying) {
                 ivPlayPause.setImageResource(R.drawable.md_pause);
             }
@@ -133,7 +93,45 @@ public class SongFragment extends Fragment {
             LocalBroadcastManager.getInstance(context).registerReceiver(receiver, new IntentFilter(Constant.ACTION));
             LocalBroadcastManager.getInstance(context).registerReceiver(mReceiver, new IntentFilter(Constant.ACTION_SEEKBAR_UPDATE));
         }
+        initialViewPart2();
+        return view;
+    }
 
+    private void setDurationView(Song song) {
+        if (song != null) {
+            try {
+                duration = MediaPlayer.create(context, Uri.parse(song.getSongSource())).getDuration();
+                seekBar.setMax(duration);
+                tvDuration.setText(song.getDuration());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void initialViewPart1() {
+        tvDuration = view.findViewById(R.id.text_view_duration);
+        tvCurrent = view.findViewById(R.id.text_view_current);
+
+        seekBar = view.findViewById(R.id.seek_bar);
+
+        ImageView ivDownload = view.findViewById(R.id.ivDownload);
+        ivDownload.setOnClickListener(ivDownloadOnClickListener);
+
+        ImageView ivFavorite = view.findViewById(R.id.ivFavorite);
+        ivFavorite.setOnClickListener(ivFavoriteOnClickListener);
+
+        ImageView ivPrevious = view.findViewById(R.id.ivPrevious);
+        ivPrevious.setOnClickListener(ivPreviousOnClickListener);
+
+        ivPlayPause = view.findViewById(R.id.ivPlayPause);
+        ivPlayPause.setOnClickListener(ivPlayPauseOnClickListener);
+
+        ImageView ivNext = view.findViewById(R.id.ivNext);
+        ivNext.setOnClickListener(ivNextOnClickListener);
+    }
+
+    private void initialViewPart2() {
         tbTop = view.findViewById(R.id.tbTop);
         tbTop.setTitle(globalSong.getSongName());
         tbTop.setSubtitle(globalSong.getArtist());
@@ -142,27 +140,38 @@ public class SongFragment extends Fragment {
         File cacheDir = context.getCacheDir();
         new File(cacheDir, "song-image-picasso-cache");
         Picasso.get().load(globalSong.getSongImage()).into(ivSongImage);
-        return view;
+    }
+
+    private void loadDataArtist() {
+        DatabaseReference artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
+        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
+    }
+
+    private void loadDataSong() {
+        DatabaseReference songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
+        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
     }
 
     private final ValueEventListener songValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                String genreId = dataSnapshot.child(Constant.CHILD_SONG_GENRE_ID).getValue(String.class);
-                String songId = dataSnapshot.getKey();
-                String songName = dataSnapshot.child(Constant.CHILD_SONG_NAME).getValue(String.class);
-                String songImage = dataSnapshot.child(Constant.CHILD_SONG_IMAGE).getValue(String.class);
-                String songSource = dataSnapshot.child(Constant.CHILD_SONG_SOURCE).getValue(String.class);
-                String artistsId = dataSnapshot.child(Constant.CHILD_SONG_ARTIST_ID).getValue(String.class);
-                String duration = dataSnapshot.child(Constant.CHILD_DURATION).getValue(String.class);
-                Song song = new Song(songId, songName, songImage, songSource, genreId, artistsId, duration);
-                for (Artist artist : artistList) {
-                    if (artist.getArtistId().equals(artistsId)) {
-                        song.setArtist(artist.getArtistName());
+            if (songList.isEmpty()) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String genreId = dataSnapshot.child(Constant.CHILD_SONG_GENRE_ID).getValue(String.class);
+                    String songId = dataSnapshot.getKey();
+                    String songName = dataSnapshot.child(Constant.CHILD_SONG_NAME).getValue(String.class);
+                    String songImage = dataSnapshot.child(Constant.CHILD_SONG_IMAGE).getValue(String.class);
+                    String songSource = dataSnapshot.child(Constant.CHILD_SONG_SOURCE).getValue(String.class);
+                    String artistsId = dataSnapshot.child(Constant.CHILD_SONG_ARTIST_ID).getValue(String.class);
+                    String duration = dataSnapshot.child(Constant.CHILD_DURATION).getValue(String.class);
+                    Song song = new Song(songId, songName, songImage, songSource, genreId, artistsId, duration);
+                    for (Artist artist : artistList) {
+                        if (artist.getArtistId().equals(artistsId)) {
+                            song.setArtist(artist.getArtistName());
+                        }
                     }
+                    songList.add(song);
                 }
-                songList.add(song);
             }
         }
 
@@ -175,18 +184,19 @@ public class SongFragment extends Fragment {
     private final ValueEventListener artistValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                String artistId = dataSnapshot.getKey();
-                String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
-                String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
-                Artist artist = new Artist(artistId, artistName, artistImage);
-                artistList.add(artist);
+            if (artistList.isEmpty()) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String artistId = dataSnapshot.getKey();
+                    String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                    String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                    Artist artist = new Artist(artistId, artistName, artistImage);
+                    artistList.add(artist);
+                }
             }
         }
 
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-
         }
     };
 
@@ -243,6 +253,7 @@ public class SongFragment extends Fragment {
                 int currentPosition = intent.getIntExtra("currentPosition", 0);
                 seekBar.setProgress(currentPosition);
                 tvCurrent.setText(MyUtilities.formatTime(currentPosition));
+                Log.e("TIME", MyUtilities.formatTime(currentPosition));
             }
         }
     };
@@ -264,13 +275,23 @@ public class SongFragment extends Fragment {
     };
 
     private final View.OnClickListener ivNextOnClickListener = view -> {
-        Song song = nextSong();
+        resetValue();
+        Song song = MyUtilities.nextSong(songList, globalSong);
         changeSong(song);
+        setDurationView(song);
+
     };
 
+    private void resetValue() {
+        seekBar.setProgress(0);
+        tvCurrent.setText(R.string._00_00);
+    }
+
     private final View.OnClickListener ivPreviousOnClickListener = view -> {
-        Song song = previousSong();
+        resetValue();
+        Song song = MyUtilities.previousSong(songList, globalSong);
         changeSong(song);
+        setDurationView(song);
     };
 
     private final View.OnClickListener ivDownloadOnClickListener = view -> {
@@ -364,37 +385,6 @@ public class SongFragment extends Fragment {
         context.startService(intent);
     }
 
-    private Song nextSong() {
-        int index = 0;
-        for (Song song : songList) {
-            if (song.getSongId().equals(globalSong.getSongId())) {
-                break;
-            }
-            index++;
-        }
-        if (index + 1 < songList.size()) {
-            index += 1;
-        } else {
-            index = 0;
-        }
-        return songList.get(index);
-    }
-
-    private Song previousSong() {
-        int index = 0;
-        for (Song song : songList) {
-            if (song.getSongId().equals(globalSong.getSongId())) {
-                break;
-            }
-            index++;
-        }
-        if (index - 1 > 0) {
-            index -= 1;
-        } else {
-            index = songList.size() - 1;
-        }
-        return songList.get(index);
-    }
 
     private void eventOnDestroy() {
         Intent intent = new Intent(context, MyService.class);
@@ -417,6 +407,4 @@ public class SongFragment extends Fragment {
         intent.putExtra("isPlaying", isPlaying);
         context.startService(intent);
     }
-
-
 }

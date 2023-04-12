@@ -37,12 +37,10 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
     private RecyclerView recyclerView;
     SongAdapterFavorite adapter;
     private List<Song> songListFavorite;
-    private List<Artist> artistList;
+    private static final List<Artist> artistList = new ArrayList<>();
     private List<Favorite> favoriteList;
-    DatabaseReference favoriteDatabaseReference;
-    DatabaseReference songDatabaseReference;
-    DatabaseReference artistDatabaseReference;
-    Context context;
+    private Context context;
+    private View view;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -55,36 +53,54 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_favorite, container, false);
         context = getContext();
         songListFavorite = new ArrayList<>();
-        artistList = new ArrayList<>();
         favoriteList = new ArrayList<>();
-        favoriteDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_FAVORITE);
-        favoriteDatabaseReference.addListenerForSingleValueEvent(favoriteValueEventListener);
-        artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
-        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
-        songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
-        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
-
-        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
-        tvFavorite = view.findViewById(R.id.text_view_favorite);
-        recyclerView = view.findViewById(R.id.recycler_view_favorite);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new ItemDecoration(22));
+        loadFavorite();
+        loadArtist();
+        loadSong();
+        initializeView();
         return view;
+    }
+
+    private void loadFavorite() {
+        DatabaseReference favoriteDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_FAVORITE);
+        favoriteDatabaseReference.addListenerForSingleValueEvent(favoriteValueEventListener);
+    }
+
+    private void loadArtist() {
+        DatabaseReference artistDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_ARTIST);
+        artistDatabaseReference.addListenerForSingleValueEvent(artistValueEventListener);
+    }
+
+    private void loadSong() {
+        DatabaseReference songDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constant.ROOT_SONG);
+        songDatabaseReference.addListenerForSingleValueEvent(songValueEventListener);
+    }
+
+    private void initializeView() {
+        if (view != null) {
+            tvFavorite = view.findViewById(R.id.text_view_favorite);
+            recyclerView = view.findViewById(R.id.recycler_view_favorite);
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.addItemDecoration(new ItemDecoration(22));
+        }
     }
 
     private final ValueEventListener artistValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                String artistId = dataSnapshot.getKey();
-                String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
-                String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
-                Artist artist = new Artist(artistId, artistName, artistImage);
-                artistList.add(artist);
+            if (artistList.isEmpty()) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String artistId = dataSnapshot.getKey();
+                    String artistName = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                    String artistImage = dataSnapshot.child(Constant.CHILD_ARTIST_NAME).getValue(String.class);
+                    Artist artist = new Artist(artistId, artistName, artistImage);
+                    artistList.add(artist);
+                }
             }
         }
 
@@ -109,16 +125,14 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
                         String artistsId = dataSnapshot.child(Constant.CHILD_SONG_ARTIST_ID).getValue(String.class);
                         String duration = dataSnapshot.child(Constant.CHILD_DURATION).getValue(String.class);
                         Song song = new Song(songId, songName, songImage, songSource, genreId, artistsId, duration);
+                        for (Artist artist : artistList) {
+                            if (song.getArtist().equals(artist.getArtistId())) {
+                                song.setArtist(artist.getArtistName());
+                            }
+                        }
                         songListFavorite.add(song);
                     }
                 }
-               for (Song song : songListFavorite) {
-                   for (Artist artist : artistList) {
-                       if (song.getArtist().equals(artist.getArtistId())) {
-                           song.setArtist(artist.getArtistName());
-                       }
-                   }
-               }
                 setLayout();
                 setFavoriteAdapter();
             }
@@ -131,7 +145,7 @@ public class FavoriteFragment extends Fragment implements SelectSongListener {
     };
 
     private void setFavoriteAdapter() {
-        adapter = new SongAdapterFavorite(getContext(), songListFavorite, this);
+        adapter = new SongAdapterFavorite(context, songListFavorite, this);
         recyclerView.setAdapter(adapter);
     }
 

@@ -32,11 +32,9 @@ import java.util.List;
 
 public class DownloadFragment extends Fragment implements SelectSongListener {
     private OnViewClickListener onViewClickListener;
-    private TextView tvDownload;
-    private RecyclerView recyclerView;
-    SongAdapterDownload adapter;
     private List<Song> songList;
     private Context context;
+    private View view;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -49,30 +47,31 @@ public class DownloadFragment extends Fragment implements SelectSongListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_download, container, false);
         context = getContext();
-        View view = inflater.inflate(R.layout.fragment_download, container, false);
-
-        tvDownload = view.findViewById(R.id.text_view_download);
-        recyclerView = view.findViewById(R.id.recycler_view_download);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new ItemDecoration(22));
-
-        initialRecyclerView();
-
+        songList = scanAudioFiles();
+        initializeView();
         return view;
     }
 
-    private void initialRecyclerView() {
-        songList = scanAudioFiles();
-        if (songList.isEmpty()) {
-            tvDownload.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            setSongAdapter();
+    private void initializeView() {
+        if (view != null) {
+            TextView tvDownload = view.findViewById(R.id.text_view_download);
+            RecyclerView recyclerView = view.findViewById(R.id.recycler_view_download);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.addItemDecoration(new ItemDecoration(22));
+            recyclerView.setVisibility(View.VISIBLE);
+            tvDownload.setVisibility(View.GONE);
+            SongAdapterDownload songAdapterDownload = new SongAdapterDownload(context, songList, this);
+            recyclerView.setAdapter(songAdapterDownload);
+            if (songList.isEmpty()) {
+                tvDownload.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            }
         }
     }
+
 
     public List<Song> scanAudioFiles() {
 
@@ -103,7 +102,7 @@ public class DownloadFragment extends Fragment implements SelectSongListener {
                 String genreName = "";
                 MediaScannerConnection.scanFile(context, new String[]{songSource}, null, (s, uri) -> {
                     if (uri != null) {
-                        Log.e("onScanCompleted", s + "|" + uri);
+                        Log.e("onScanCompleted", s + " | " + uri);
                     }
                 });
                 Cursor genreCursor = context.getContentResolver().query(MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI, new String[]{MediaStore.Audio.Genres.NAME}, null, null, null);
@@ -142,7 +141,7 @@ public class DownloadFragment extends Fragment implements SelectSongListener {
 
                             MediaScannerConnection.scanFile(context, new String[]{path}, null, (s, uri) -> {
                                 if (uri != null) {
-                                    Log.e("onScanCompleted", s + "|" + uri);
+                                    Log.e("onScanCompleted", s + " | " + uri);
                                 }
                             });
                         }
@@ -153,18 +152,10 @@ public class DownloadFragment extends Fragment implements SelectSongListener {
     }
 
 
-    private void setSongAdapter() {
-        recyclerView.setVisibility(View.VISIBLE);
-        tvDownload.setVisibility(View.GONE);
-        adapter = new SongAdapterDownload(context, songList, this);
-        recyclerView.setAdapter(adapter);
-    }
-
 
     @Override
     public void onItemClicked(Song song) {
         onViewClickListener.onItemSongClicked(song);
         StorageSingleton.putString(Constant.CURRENT_SONG_NAME, song.getSongName());
     }
-
 }
